@@ -24,3 +24,9 @@ adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 - `compat` checker: flags component/model version mismatches.
 - `policy` matcher: wildcard import allowances and deny-by-default rules.
 
+### Changed
+- Error taxonomy (`error.rs`) with stable machine-readable codes.
+
+## [0.3.0] - 2022-11-02
+
+### Added
