@@ -40,3 +40,9 @@ adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 ### Added
 - `json` writer: canonical, deterministic JSON output (sorted keys).
 - `report` summarizer: per-capability counts, section sizes, import table.
+
+### Changed
+- Decoder hardening: bounds-checked LEB128 reads, section table validation.
+
+## [0.1.0] - 2019-09-08
+
