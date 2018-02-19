@@ -14,3 +14,8 @@ all: build test ## Build and test everything
 
 help: ## Show this help
 	@grep -E '^[a-zA-Z_-]+:.*?## .*$$' $(MAKEFILE_LIST) | \
+		awk 'BEGIN{FS=":.*?## "}{printf "  %-14s %s\n", $$1, $$2}'
+
+build: rust-build ts-build ## Build Rust workspace and TS explorer
+
+test: rust-test ts-test ## Run all tests
