@@ -24,3 +24,8 @@ test: rust-test ts-test ## Run all tests
 
 rust-build: ## Build the Rust workspace (release)
 	$(CARGO) build --release
+
+rust-test: ## Run Rust unit + integration + doc tests
+	$(CARGO) test
+
+rust-fmt: ## Check Rust formatting
