@@ -43,3 +43,20 @@ WasmQuay inspection :: net-service.wasm
 $ ./target/release/WasmQuay policy fixtures/net-service.wasm examples/sandbox-strict.pol
 policy 'sandbox-strict': VIOLATION
   [allow] fs       (1 reqs)
+  [allow] clock    (1 reqs)
+  [DENY ] network  (2 reqs)
+$ echo $?
+3
+```
+
+That last exit code is the point: **WasmQuay is designed to gate CI**. A
+component that reaches for a capability its policy forbids fails the build.
+
+---
+
+## `0x01` — What this actually is (and is not)
+
+WasmQuay is a **static analyzer** for the WebAssembly ecosystem. It answers one
+question well: *what can this component do to the outside world, and is that
+allowed?*
+
