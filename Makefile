@@ -29,3 +29,8 @@ rust-test: ## Run Rust unit + integration + doc tests
 	$(CARGO) test
 
 rust-fmt: ## Check Rust formatting
+	$(CARGO) fmt --all -- --check
+
+rust-clippy: ## Lint with clippy (deny warnings)
+	$(CARGO) clippy --all-targets -- -D warnings
+
