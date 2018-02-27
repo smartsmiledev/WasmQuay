@@ -34,3 +34,9 @@ rust-fmt: ## Check Rust formatting
 rust-clippy: ## Lint with clippy (deny warnings)
 	$(CARGO) clippy --all-targets -- -D warnings
 
+## --- TypeScript -------------------------------------------------------
+
+ts-build: ## Compile the TypeScript explorer
+	cd explorer && $(NPM) run build
+
+ts-test: ## Type-check and run the explorer tests (offline, no install)
