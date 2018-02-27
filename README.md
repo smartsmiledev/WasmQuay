@@ -60,3 +60,21 @@ WasmQuay is a **static analyzer** for the WebAssembly ecosystem. It answers one
 question well: *what can this component do to the outside world, and is that
 allowed?*
 
+A WebAssembly module is a sealed box. The only way it can touch a filesystem,
+open a socket, read the clock, or learn the time of day is through the host
+functions it **imports**. WasmQuay decodes those imports straight from the
+binary, buckets each one into a capability **domain**, and checks the result
+against a policy you write in plain text.
+
+> ### ⚠️ Scope & honesty
+> WasmQuay **does not execute, instantiate, or sandbox** WebAssembly. It is not
+> a runtime and makes no runtime-enforcement claims. When the docs say
+> "enforce", they mean *analyze against a stated policy at inspection time* —
+> the kind of check you run in CI, not an interception layer around a live
+> module. Everything it reports is derived from bytes on disk. That honesty is a
+> feature: the analysis is deterministic, offline, and auditable.
+
+What it genuinely does, verified by its own test suite:
+
+- **Decodes** the WebAssembly core binary format: the `\0asm` header, the
+  section table (ids/offsets/sizes), the import and export sections, and the
