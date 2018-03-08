@@ -96,3 +96,21 @@ What it genuinely does, verified by its own test suite:
 ```text
         ┌──────────────────────── RUST (std-only) ─────────────────────────┐
         │                                                                   │
+  .wasm │   leb ──▶ wasm ──▶ policy ──▶ compat                              │
+  ──────┼─▶ ┌─────┐  ┌────┐  ┌──────┐  ┌──────┐        ┌──────────┐         │
+  .wit  │   │bytes│  │decode│ │classify││diff │  ──────▶│  report  │─┐       │
+  ──────┼─▶ │+LEB │  │hdr/  │ │fs/env/ ││expo │        │ json/txt │ │       │
+  .pol  │   │     │  │sect/ │ │clock/  ││caps │        └──────────┘ │       │
+  ──────┼─▶ └─────┘  │imp/  │ │net/... │└──────┘             ▲       │       │
+        │            │exp/  │ └──────┘                       │       │       │
+        │            │name  │              fixture ──────────┘       │       │
+        │            └──────┘              (binary encoder)          │       │
+        └────────────────────────────────────────────────────────────┼──────┘
+                                                                       │ JSON
+        ┌──────────────────── TYPESCRIPT (tsc-only) ───────────────────▼──────┐
+        │   parse (schema guards) ──▶ analyze (risk + reconcile) ──▶ render    │
+        │                          wasmquay-explore CLI                        │
+        └───────────────────────────────────────────────────────────────────┘
+```
+
+| Crate / package        | Role                                                             |
