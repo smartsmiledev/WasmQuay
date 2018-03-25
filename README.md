@@ -237,3 +237,21 @@ policy 'sandbox-strict': VIOLATION
   [allow] fs       (1 reqs)
   [allow] clock    (1 reqs)
   [DENY ] network  (2 reqs)
+exit=3
+```
+
+### `compat` — is it a safe swap?
+
+```console
+$ ./target/release/WasmQuay compat fixtures/clock-service.wasm fixtures/net-service.wasm
+compat clock-service.wasm <- net-service.wasm: BREAKING
+  ! new capability required: network via wasi_snapshot_preview1
+```
+
+`net-service` keeps every export `clock-service` had, so exports are fine — but
+it *adds* a network requirement. A host that safely ran the clock service might
+not be prepared to grant sockets, so the swap is flagged **BREAKING**.
+
+The reverse direction is compatible (dropping a capability never breaks a host):
+
+```console
