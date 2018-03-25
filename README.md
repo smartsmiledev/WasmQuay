@@ -220,3 +220,20 @@ names — WasmQuay classifies both.
 ```console
 $ cat examples/sandbox-strict.pol
 policy "sandbox-strict"
+default deny
+allow clock
+allow stdio
+allow fs: /tmp, /var/cache/worker
+deny network
+deny env
+
+$ ./target/release/WasmQuay policy fixtures/clock-service.wasm examples/sandbox-strict.pol
+policy 'sandbox-strict': COMPLIANT
+  [allow] fs       (1 reqs)
+  [allow] clock    (1 reqs)
+
+$ ./target/release/WasmQuay policy fixtures/net-service.wasm examples/sandbox-strict.pol ; echo "exit=$?"
+policy 'sandbox-strict': VIOLATION
+  [allow] fs       (1 reqs)
+  [allow] clock    (1 reqs)
+  [DENY ] network  (2 reqs)
