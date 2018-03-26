@@ -290,3 +290,21 @@ $ node explorer/dist/cli.js surface net.json pol.json
   capabilities:
     • network  x2  — can open sockets / exfiltrate data
     • fs       x1  — can read or modify files
+    • clock    x1  — can read wall/monotonic clocks
+
+policy 'sandbox-strict': VIOLATION
+  ✓ [ok] 'fs' required and allowed
+  ✓ [ok] 'clock' required and allowed
+  ✗ [violation] 'network' is required but denied by policy 'sandbox-strict' — can open sockets / exfiltrate data
+```
+
+Rank several components by static risk:
+
+```console
+$ node explorer/dist/cli.js rank net.json clock.json
+capability risk ranking (highest first):
+  1. net-service.wasm         HIGH      score=22.9
+  2. clock-service.wasm       ELEVATED  score=10
+```
+
+The risk score weights domains by blast radius (`network`/`unknown` = 5,
