@@ -273,3 +273,20 @@ classified capability domains:
 ```
 
 ---
+
+## `0x05` — The TypeScript explorer
+
+The Rust CLI produces JSON; the explorer turns it into an opinionated risk view.
+It executes nothing — it is a pure function of the report you feed it.
+
+```console
+$ ./target/release/WasmQuay inspect fixtures/net-service.wasm --json > net.json
+$ ./target/release/WasmQuay policy fixtures/net-service.wasm examples/sandbox-strict.pol --json > pol.json
+
+$ node explorer/dist/cli.js surface net.json pol.json
+▚ net-service.wasm (net-service)
+  risk: ● HIGH (score 22.9)
+  imports=5 exports=1
+  capabilities:
+    • network  x2  — can open sockets / exfiltrate data
+    • fs       x1  — can read or modify files
