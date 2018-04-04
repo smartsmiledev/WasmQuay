@@ -308,3 +308,21 @@ capability risk ranking (highest first):
 ```
 
 The risk score weights domains by blast radius (`network`/`unknown` = 5,
+`fs` = 4, `env` = 2, `clock`/`random`/`stdio` = 1) and scales sub-linearly with
+how many distinct entry points a domain has, so one chatty domain can't drown
+out the signal. The exact weights and bands live in
+[`explorer/src/analyze.ts`](explorer/src/analyze.ts).
+
+Use it as a library, too:
+
+```ts
+import { parseInspection, analyzeSurface } from "wasmquay-explorer";
+
+const surface = analyzeSurface(parseInspection(reportJson));
+if (surface.hasUnknown) {
+  throw new Error(`${surface.source} imports an unclassified host!`);
+}
+console.log(`${surface.source}: ${surface.band} (score ${surface.score})`);
+```
+
+---
