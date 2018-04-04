@@ -344,3 +344,20 @@ console.log(`${surface.source}: ${surface.band} (score ${surface.score})`);
 | `wasi:io/*`                                    | `stdio`    | streams                          |
 | *anything else*                                | `unknown`  | **unrecognized host — untrusted**|
 
+Memory/table/global imports are data plumbing and are **not** treated as
+capabilities. An `unknown` import always violates a deny-by-default policy —
+WasmQuay never silently ignores a host dependency it can't name.
+
+The full grammar for every format (WIT-like manifest, `.pol` policy, and all
+four JSON schemas) is specified in **[`docs/FORMAT.md`](docs/FORMAT.md)**.
+
+---
+
+## `0x07` — Fixtures
+
+The repository ships four deterministic binary fixtures under `fixtures/`, and
+the exact encoder that produced them (`wasmquay-core::fixture`). Regenerate them
+byte-for-byte any time:
+
+```console
+$ ./target/release/WasmQuay gen-fixtures fixtures
