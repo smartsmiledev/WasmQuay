@@ -29,3 +29,15 @@ impl<'a> Reader<'a> {
     pub fn remaining(&self) -> usize {
         self.data.len().saturating_sub(self.pos)
     }
+
+    /// True when the cursor has consumed all input.
+    pub fn is_empty(&self) -> bool {
+        self.pos >= self.data.len()
+    }
+
+    /// Read a single byte.
+    pub fn u8(&mut self) -> Result<u8> {
+        if self.pos >= self.data.len() {
+            return Err(Error::at(
+                ErrorKind::UnexpectedEof,
+                "expected a byte",
