@@ -41,3 +41,15 @@ impl<'a> Reader<'a> {
             return Err(Error::at(
                 ErrorKind::UnexpectedEof,
                 "expected a byte",
+                self.pos,
+            ));
+        }
+        let b = self.data[self.pos];
+        self.pos += 1;
+        Ok(b)
+    }
+
+    /// Read a fixed little-endian `u32` (4 bytes).
+    pub fn u32_le(&mut self) -> Result<u32> {
+        let bytes = self.take(4)?;
+        Ok(u32::from_le_bytes([bytes[0], bytes[1], bytes[2], bytes[3]]))
