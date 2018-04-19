@@ -65,3 +65,16 @@ impl<'a> Reader<'a> {
             return Err(Error::at(
                 ErrorKind::UnexpectedEof,
                 format!("wanted {} bytes, {} remain", n, self.remaining()),
+                self.pos,
+            ));
+        }
+        let slice = &self.data[self.pos..end];
+        self.pos = end;
+        Ok(slice)
+    }
+
+    /// Skip `n` bytes.
+    pub fn skip(&mut self, n: usize) -> Result<()> {
+        self.take(n).map(|_| ())
+    }
+
