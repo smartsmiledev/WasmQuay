@@ -78,3 +78,15 @@ impl<'a> Reader<'a> {
         self.take(n).map(|_| ())
     }
 
+    /// Decode an unsigned LEB128 integer (max 64 bits).
+    pub fn uleb128(&mut self) -> Result<u64> {
+        let start = self.pos;
+        let mut result: u64 = 0;
+        let mut shift: u32 = 0;
+        loop {
+            let byte = self.u8()?;
+            if shift >= 64 {
+                return Err(Error::at(ErrorKind::BadLeb128, "uleb128 too long", start));
+            }
+            let low = (byte & 0x7f) as u64;
+            // Guard against bits that would overflow the 64-bit accumulator.
