@@ -151,3 +151,15 @@ mod tests {
         // 624485 == 0xE5 0x8E 0x26
         let mut r = Reader::new(&[0xE5, 0x8E, 0x26]);
         assert_eq!(r.uleb128().unwrap(), 624485);
+        assert!(r.is_empty());
+    }
+
+    #[test]
+    fn sleb128_negative() {
+        // -123456 encodes as 0xC0 0xBB 0x78
+        let mut r = Reader::new(&[0xC0, 0xBB, 0x78]);
+        assert_eq!(r.sleb128().unwrap(), -123456);
+    }
+
+    #[test]
+    fn sleb128_small_negative() {
