@@ -139,3 +139,15 @@ impl<'a> Reader<'a> {
         std::str::from_utf8(bytes)
             .map(|s| s.to_string())
             .map_err(|_| Error::at(ErrorKind::BadUtf8, "invalid utf-8 name", start))
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn uleb128_multibyte() {
+        // 624485 == 0xE5 0x8E 0x26
+        let mut r = Reader::new(&[0xE5, 0x8E, 0x26]);
+        assert_eq!(r.uleb128().unwrap(), 624485);
