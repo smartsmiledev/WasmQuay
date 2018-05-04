@@ -114,3 +114,15 @@ impl<'a> Reader<'a> {
         let mut result: i64 = 0;
         let mut shift: u32 = 0;
         loop {
+            let byte = self.u8()?;
+            if shift >= 64 {
+                return Err(Error::at(ErrorKind::BadLeb128, "sleb128 too long", start));
+            }
+            result |= ((byte & 0x7f) as i64) << shift;
+            shift += 7;
+            if byte & 0x80 == 0 {
+                // Sign-extend if the sign bit of the last group is set.
+                if shift < 64 && (byte & 0x40) != 0 {
+                    result |= -1i64 << shift;
+                }
+                break;
