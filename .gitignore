@@ -1,0 +1,18 @@
+# Rust
+/target
+**/*.rs.bk
+Cargo.lock
+
+# Node / TypeScript
+explorer/node_modules
+explorer/dist
+explorer/dist-test
+npm-debug.log*
+
+# OS / editor
+.DS_Store
+Thumbs.db
+*.swp
+.idea/
+.vscode/
+
