@@ -72,3 +72,20 @@ pub fn section_name(id: u8) -> &'static str {
         2 => "import",
         3 => "function",
         4 => "table",
+        5 => "memory",
+        6 => "global",
+        7 => "export",
+        8 => "start",
+        9 => "element",
+        10 => "code",
+        11 => "data",
+        12 => "data-count",
+        13 => "tag",
+        _ => "unknown",
+    }
+}
+
+/// A decoded section header: its id, byte range and (for custom sections) name.
+#[derive(Debug, Clone)]
+pub struct SectionInfo {
+    /// The raw section id byte.
