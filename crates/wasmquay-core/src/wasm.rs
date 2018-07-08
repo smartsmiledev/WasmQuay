@@ -106,3 +106,20 @@ pub struct Import {
     /// The import module namespace (e.g. `wasi_snapshot_preview1`).
     pub module: String,
     /// The imported field/function name.
+    pub field: String,
+    /// The external kind of the import.
+    pub kind: ExternalKind,
+}
+
+/// A single export entry.
+#[derive(Debug, Clone, PartialEq, Eq)]
+pub struct Export {
+    /// The exported name.
+    pub field: String,
+    /// The external kind of the export.
+    pub kind: ExternalKind,
+    /// The index into the corresponding index space.
+    pub index: u32,
+}
+
+/// The fully decoded module.
