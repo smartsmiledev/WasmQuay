@@ -123,3 +123,20 @@ pub struct Export {
 }
 
 /// The fully decoded module.
+#[derive(Debug, Clone, Default)]
+pub struct Module {
+    /// The binary format version (little-endian `u32` from the header).
+    pub version: u32,
+    /// The decoded section table, in file order.
+    pub sections: Vec<SectionInfo>,
+    /// All import entries.
+    pub imports: Vec<Import>,
+    /// All export entries.
+    pub exports: Vec<Export>,
+    /// Module name from the custom `name` section, if present.
+    pub module_name: Option<String>,
+    /// Function index -> symbol name, from the custom `name` section.
+    pub function_names: Vec<(u32, String)>,
+    /// Total byte length of the input.
+    pub byte_len: usize,
+}
