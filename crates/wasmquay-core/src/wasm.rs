@@ -190,3 +190,20 @@ pub fn parse(data: &[u8]) -> Result<Module> {
 
     let mut module = Module {
         version,
+        byte_len: data.len(),
+        ..Module::default()
+    };
+
+    while !r.is_empty() {
+        let id = r.u8()?;
+        let size = r.uleb128_u32()? as usize;
+        let payload_offset = r.position();
+        let payload = r.take(size)?;
+
+        let mut info = SectionInfo {
+            id,
+            name: section_name(id).to_string(),
+            custom_name: String::new(),
+            offset: payload_offset,
+            size,
+        };
