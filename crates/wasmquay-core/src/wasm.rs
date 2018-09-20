@@ -207,3 +207,20 @@ pub fn parse(data: &[u8]) -> Result<Module> {
             offset: payload_offset,
             size,
         };
+
+        match id {
+            0 => decode_custom(payload, &mut info, &mut module)?,
+            2 => module.imports = decode_imports(payload)?,
+            7 => module.exports = decode_exports(payload)?,
+            // Other sections are recorded structurally but not deep-decoded.
+            _ => {}
+        }
+
+        module.sections.push(info);
+    }
+
+    Ok(module)
+}
+
+fn decode_custom(payload: &[u8], info: &mut SectionInfo, module: &mut Module) -> Result<()> {
+    let mut r = Reader::new(payload);
