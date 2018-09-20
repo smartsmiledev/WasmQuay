@@ -224,3 +224,20 @@ pub fn parse(data: &[u8]) -> Result<Module> {
 
 fn decode_custom(payload: &[u8], info: &mut SectionInfo, module: &mut Module) -> Result<()> {
     let mut r = Reader::new(payload);
+    let name = r.name()?;
+    info.custom_name = name.clone();
+    if name == "name" {
+        decode_name_section(&mut r, module)?;
+    }
+    Ok(())
+}
+
+/// Decode the `name` custom section (subsections 0 = module, 1 = functions).
+fn decode_name_section(r: &mut Reader<'_>, module: &mut Module) -> Result<()> {
+    while !r.is_empty() {
+        let subsection_id = r.u8()?;
+        let sub_size = r.uleb128_u32()? as usize;
+        let sub_bytes = r.take(sub_size)?;
+        let mut sub = Reader::new(sub_bytes);
+        match subsection_id {
+            0 => {
