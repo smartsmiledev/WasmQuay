@@ -9,3 +9,5 @@ authors.workspace = true
 description = "Core parsing, capability policy and JSON serialization for the wasmquay toolkit"
 
 [lib]
+name = "wasmquay_core"
+path = "src/lib.rs"
