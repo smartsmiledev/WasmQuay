@@ -17,3 +17,12 @@ pub enum ErrorKind {
     /// A LEB128 integer was malformed (too long / overflowing).
     BadLeb128,
     /// A UTF-8 name inside the module was not valid UTF-8.
+    BadUtf8,
+    /// A section or subsection declared a size that does not line up.
+    MalformedSection,
+    /// A manifest (WIT-like or policy) could not be parsed.
+    BadManifest,
+    /// An input/output error while reading a file.
+    Io,
+}
+
