@@ -35,3 +35,11 @@ impl ErrorKind {
             ErrorKind::BadLeb128 => "bad-leb128",
             ErrorKind::BadUtf8 => "bad-utf8",
             ErrorKind::MalformedSection => "malformed-section",
+            ErrorKind::BadManifest => "bad-manifest",
+            ErrorKind::Io => "io",
+        }
+    }
+}
+
+/// A wasmquay error: a [`ErrorKind`] plus a descriptive message and an
+/// optional byte offset into the source that triggered it.
