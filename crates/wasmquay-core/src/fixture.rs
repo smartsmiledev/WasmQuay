@@ -19,3 +19,15 @@ pub struct FixtureBuilder {
 }
 
 impl FixtureBuilder {
+    /// Start a new fixture.
+    pub fn new() -> Self {
+        FixtureBuilder::default()
+    }
+
+    /// Set the module name emitted in the custom `name` section.
+    pub fn module_name(mut self, name: &str) -> Self {
+        self.module_name = Some(name.to_string());
+        self
+    }
+
+    /// Add a function import `module.field`.
