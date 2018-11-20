@@ -78,3 +78,12 @@ impl Error {
     pub fn offset(&self) -> Option<usize> {
         self.offset
     }
+}
+
+impl fmt::Display for Error {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        match self.offset {
+            Some(off) => write!(
+                f,
+                "[{}] {} (at byte {})",
+                self.kind.slug(),
