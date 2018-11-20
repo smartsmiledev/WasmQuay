@@ -31,3 +31,15 @@ impl FixtureBuilder {
     }
 
     /// Add a function import `module.field`.
+    pub fn import_func(mut self, module: &str, field: &str) -> Self {
+        self.imports
+            .push((module.to_string(), field.to_string(), ExternalKind::Func));
+        self
+    }
+
+    /// Add a memory import (data plumbing, not a capability).
+    pub fn import_memory(mut self, module: &str, field: &str) -> Self {
+        self.imports
+            .push((module.to_string(), field.to_string(), ExternalKind::Memory));
+        self
+    }
