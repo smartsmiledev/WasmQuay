@@ -79,3 +79,14 @@ impl FixtureBuilder {
         out
     }
 
+    fn encode_import_section(&self) -> Vec<u8> {
+        let mut body = Vec::new();
+        write_uleb(&mut body, self.imports.len() as u64);
+        for (module, field, kind) in &self.imports {
+            write_name(&mut body, module);
+            write_name(&mut body, field);
+            match kind {
+                ExternalKind::Func => {
+                    body.push(0x00);
+                    write_uleb(&mut body, 0); // typeidx 0
+                }
