@@ -138,3 +138,15 @@ impl FixtureBuilder {
             write_name(&mut sub, name);
             body.push(0x00); // subsection: module name
             write_uleb(&mut body, sub.len() as u64);
+            body.extend_from_slice(&sub);
+        }
+        if !self.function_names.is_empty() {
+            let mut sub = Vec::new();
+            write_uleb(&mut sub, self.function_names.len() as u64);
+            for (idx, fname) in &self.function_names {
+                write_uleb(&mut sub, *idx as u64);
+                write_name(&mut sub, fname);
+            }
+            body.push(0x01); // subsection: function names
+            write_uleb(&mut body, sub.len() as u64);
+            body.extend_from_slice(&sub);
