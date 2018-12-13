@@ -102,3 +102,15 @@ impl FixtureBuilder {
                     write_uleb(&mut body, 1);
                 }
                 ExternalKind::Global => {
+                    body.push(0x03);
+                    body.push(0x7f); // i32
+                    body.push(0x00); // immutable
+                }
+                ExternalKind::Other(b) => body.push(*b),
+            }
+        }
+        body
+    }
+
+    fn encode_export_section(&self) -> Vec<u8> {
+        let mut body = Vec::new();
