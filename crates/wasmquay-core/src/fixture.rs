@@ -162,3 +162,14 @@ fn emit_section(out: &mut Vec<u8>, id: u8, body: &[u8]) {
 }
 
 fn write_uleb(out: &mut Vec<u8>, mut value: u64) {
+    loop {
+        let mut byte = (value & 0x7f) as u8;
+        value >>= 7;
+        if value != 0 {
+            byte |= 0x80;
+        }
+        out.push(byte);
+        if value == 0 {
+            break;
+        }
+    }
