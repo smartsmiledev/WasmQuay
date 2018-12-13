@@ -126,3 +126,15 @@ impl FixtureBuilder {
             };
             body.push(kb);
             write_uleb(&mut body, *index as u64);
+        }
+        body
+    }
+
+    fn encode_name_section(&self) -> Vec<u8> {
+        let mut body = Vec::new();
+        write_name(&mut body, "name");
+        if let Some(name) = &self.module_name {
+            let mut sub = Vec::new();
+            write_name(&mut sub, name);
+            body.push(0x00); // subsection: module name
+            write_uleb(&mut body, sub.len() as u64);
