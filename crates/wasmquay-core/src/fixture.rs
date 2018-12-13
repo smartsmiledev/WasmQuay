@@ -173,3 +173,15 @@ fn write_uleb(out: &mut Vec<u8>, mut value: u64) {
             break;
         }
     }
+}
+
+fn write_name(out: &mut Vec<u8>, name: &str) {
+    write_uleb(out, name.len() as u64);
+    out.extend_from_slice(name.as_bytes());
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+    use crate::wasm::parse;
+
