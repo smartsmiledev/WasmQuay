@@ -40,3 +40,11 @@
 //! let reqs = policy::requirements_from_module(&module);
 //!
 //! // Evaluate against a deny-by-default policy that only allows the clock.
+//! let pol = policy::Policy::parse("policy \"p\"\ndefault deny\nallow clock\n").unwrap();
+//! let eval = policy::evaluate(&reqs, &pol);
+//!
+//! assert!(!eval.is_compliant());               // network is denied
+//! assert!(eval.violations().contains(&policy::Domain::Network));
+//!
+//! let json = report::evaluation_json(&eval).to_pretty();
+//! assert!(json.contains("\"network\""));
