@@ -32,3 +32,11 @@
 //! let bytes = FixtureBuilder::new()
 //!     .module_name("svc")
 //!     .import_func("wasi_snapshot_preview1", "clock_time_get")
+//!     .import_func("wasi_snapshot_preview1", "sock_recv")
+//!     .export_func("run", 0)
+//!     .build();
+//!
+//! let module = wasm::parse(&bytes).unwrap();
+//! let reqs = policy::requirements_from_module(&module);
+//!
+//! // Evaluate against a deny-by-default policy that only allows the clock.
