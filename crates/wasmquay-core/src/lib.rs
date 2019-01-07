@@ -24,3 +24,11 @@
 //! policy*, not sandbox interception.
 //!
 //! ## Example
+//!
+//! ```
+//! use wasmquay_core::{fixture::FixtureBuilder, wasm, policy, report};
+//!
+//! // Synthesize a module that imports a clock and a socket.
+//! let bytes = FixtureBuilder::new()
+//!     .module_name("svc")
+//!     .import_func("wasi_snapshot_preview1", "clock_time_get")
