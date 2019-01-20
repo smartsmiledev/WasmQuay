@@ -76,3 +76,14 @@ impl Json {
                 for (i, item) in items.iter().enumerate() {
                     if i > 0 {
                         out.push(',');
+                    }
+                    newline_indent(out, indent, depth + 1);
+                    item.write(out, indent, depth + 1);
+                }
+                newline_indent(out, indent, depth);
+                out.push(']');
+            }
+            Json::Obj(pairs) => {
+                if pairs.is_empty() {
+                    out.push_str("{}");
+                    return;
