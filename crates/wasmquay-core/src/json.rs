@@ -40,3 +40,15 @@ impl Json {
     /// Build an object from key/value pairs, preserving order.
     pub fn obj(pairs: Vec<(&str, Json)>) -> Json {
         Json::Obj(pairs.into_iter().map(|(k, v)| (k.to_string(), v)).collect())
+    }
+
+    /// Build an array from a vector of strings.
+    pub fn str_arr<I: IntoIterator<Item = String>>(items: I) -> Json {
+        Json::Arr(items.into_iter().map(Json::Str).collect())
+    }
+
+    /// Serialize compactly (no whitespace).
+    pub fn to_compact(&self) -> String {
+        let mut out = String::new();
+        self.write(&mut out, None, 0);
+        out
