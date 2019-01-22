@@ -87,3 +87,15 @@ impl Json {
                 if pairs.is_empty() {
                     out.push_str("{}");
                     return;
+                }
+                out.push('{');
+                for (i, (k, v)) in pairs.iter().enumerate() {
+                    if i > 0 {
+                        out.push(',');
+                    }
+                    newline_indent(out, indent, depth + 1);
+                    write_json_string(out, k);
+                    out.push(':');
+                    if indent.is_some() {
+                        out.push(' ');
+                    }
