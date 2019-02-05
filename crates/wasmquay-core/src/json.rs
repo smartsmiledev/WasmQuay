@@ -99,3 +99,15 @@ impl Json {
                     if indent.is_some() {
                         out.push(' ');
                     }
+                    v.write(out, indent, depth + 1);
+                }
+                newline_indent(out, indent, depth);
+                out.push('}');
+            }
+        }
+    }
+}
+
+fn newline_indent(out: &mut String, indent: Option<usize>, depth: usize) {
+    if let Some(step) = indent {
+        out.push('\n');
