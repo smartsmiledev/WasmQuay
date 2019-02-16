@@ -147,3 +147,15 @@ fn write_json_string(out: &mut String, s: &str) {
             c => out.push(c),
         }
     }
+    out.push('"');
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn compact_object_preserves_order() {
+        let j = Json::obj(vec![("b", Json::u(2)), ("a", Json::s("x"))]);
+        assert_eq!(j.to_compact(), r#"{"b":2,"a":"x"}"#);
+    }
