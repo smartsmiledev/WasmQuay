@@ -126,3 +126,19 @@ fn capabilities_json(requirements: &[Requirement]) -> Json {
                 requirements.iter().filter(|r| r.domain == domain).collect();
             if reqs.is_empty() {
                 return None;
+            }
+            Some(Json::obj(vec![
+                ("domain", Json::s(domain.slug())),
+                (
+                    "requirements",
+                    Json::Arr(
+                        reqs.iter()
+                            .map(|r| {
+                                Json::obj(vec![
+                                    ("source", Json::s(r.source.clone())),
+                                    ("detail", Json::s(r.detail.clone())),
+                                ])
+                            })
+                            .collect(),
+                    ),
+                ),
