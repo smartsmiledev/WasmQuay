@@ -157,3 +157,19 @@ pub fn evaluation_json(eval: &Evaluation) -> Json {
         .map(|v| {
             Json::obj(vec![
                 ("domain", Json::s(v.domain.slug())),
+                ("required", Json::Bool(v.required)),
+                ("allowed", Json::Bool(v.allowed)),
+                ("violation", Json::Bool(v.is_violation())),
+                (
+                    "requirements",
+                    Json::Arr(
+                        v.requirements
+                            .iter()
+                            .map(|r| Json::s(format!("{} :: {}", r.source, r.detail)))
+                            .collect(),
+                    ),
+                ),
+            ])
+        })
+        .collect();
+
