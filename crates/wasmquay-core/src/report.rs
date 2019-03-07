@@ -173,3 +173,18 @@ pub fn evaluation_json(eval: &Evaluation) -> Json {
         })
         .collect();
 
+    Json::obj(vec![
+        ("schema", Json::s("wasmquay/policy@1")),
+        ("policy", Json::s(eval.policy_name.clone())),
+        ("compliant", Json::Bool(eval.is_compliant())),
+        (
+            "violations",
+            Json::str_arr(eval.violations().into_iter().map(|d| d.slug().to_string())),
+        ),
+        ("verdicts", Json::Arr(verdicts)),
+    ])
+}
+
+/// Build the JSON document for a compatibility comparison.
+pub fn compatibility_json(compat: &Compatibility) -> Json {
+    let export_diffs = compat
