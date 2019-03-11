@@ -188,3 +188,19 @@ pub fn evaluation_json(eval: &Evaluation) -> Json {
 /// Build the JSON document for a compatibility comparison.
 pub fn compatibility_json(compat: &Compatibility) -> Json {
     let export_diffs = compat
+        .export_diffs
+        .iter()
+        .map(|d| {
+            Json::obj(vec![
+                ("change", Json::s(d.change.slug())),
+                ("name", Json::s(d.name.clone())),
+                ("kind", Json::s(d.kind.clone())),
+            ])
+        })
+        .collect();
+    let cap_diffs = compat
+        .capability_diffs
+        .iter()
+        .map(|d| {
+            Json::obj(vec![
+                ("change", Json::s(d.change.slug())),
