@@ -250,3 +250,19 @@ pub fn inspection_text(
     for domain in Domain::ALL.iter().chain(std::iter::once(&Domain::Unknown)) {
         let count = requirements.iter().filter(|r| r.domain == *domain).count();
         if count > 0 {
+            out.push_str(&format!("    - {:<8} x{}\n", domain.slug(), count));
+            printed = true;
+        }
+    }
+    if !printed {
+        out.push_str("    (none — no host imports)\n");
+    }
+    out
+}
+
+/// Render a human-readable text summary of a policy evaluation.
+pub fn evaluation_text(eval: &Evaluation) -> String {
+    let mut out = String::new();
+    out.push_str(&format!("policy '{}': ", eval.policy_name));
+    out.push_str(if eval.is_compliant() {
+        "COMPLIANT\n"
