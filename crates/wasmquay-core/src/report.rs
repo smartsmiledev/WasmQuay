@@ -204,3 +204,18 @@ pub fn compatibility_json(compat: &Compatibility) -> Json {
         .map(|d| {
             Json::obj(vec![
                 ("change", Json::s(d.change.slug())),
+                ("domain", Json::s(d.domain.slug())),
+                ("source", Json::s(d.source.clone())),
+            ])
+        })
+        .collect();
+
+    Json::obj(vec![
+        ("schema", Json::s("wasmquay/compat@1")),
+        ("baseline", Json::s(compat.baseline_name.clone())),
+        ("candidate", Json::s(compat.candidate_name.clone())),
+        ("compatible", Json::Bool(compat.is_compatible())),
+        ("breaking_reasons", Json::str_arr(compat.breaking_reasons())),
+        ("export_diffs", Json::Arr(export_diffs)),
+        ("capability_diffs", Json::Arr(cap_diffs)),
+    ])
