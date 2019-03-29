@@ -266,3 +266,18 @@ pub fn evaluation_text(eval: &Evaluation) -> String {
     out.push_str(&format!("policy '{}': ", eval.policy_name));
     out.push_str(if eval.is_compliant() {
         "COMPLIANT\n"
+    } else {
+        "VIOLATION\n"
+    });
+    for v in &eval.verdicts {
+        if v.required {
+            let mark = if v.is_violation() { "DENY " } else { "allow" };
+            out.push_str(&format!(
+                "  [{}] {:<8} ({} reqs)\n",
+                mark,
+                v.domain.slug(),
+                v.requirements.len()
+            ));
+        }
+    }
+    out
