@@ -26,3 +26,19 @@ pub enum Change {
 }
 
 impl Change {
+    /// Stable slug used in reports.
+    pub fn slug(self) -> &'static str {
+        match self {
+            Change::Removed => "removed",
+            Change::Added => "added",
+        }
+    }
+}
+
+/// A single export difference.
+#[derive(Debug, Clone, PartialEq, Eq)]
+pub struct ExportDiff {
+    /// Whether the export was added or removed.
+    pub change: Change,
+    /// The export name.
+    pub name: String,
