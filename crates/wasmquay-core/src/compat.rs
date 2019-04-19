@@ -42,3 +42,20 @@ pub struct ExportDiff {
     pub change: Change,
     /// The export name.
     pub name: String,
+    /// The export kind slug.
+    pub kind: String,
+}
+
+/// A single capability (import domain) difference.
+#[derive(Debug, Clone, PartialEq, Eq)]
+pub struct CapabilityDiff {
+    /// Whether the capability was added or removed.
+    pub change: Change,
+    /// The affected capability domain.
+    pub domain: Domain,
+    /// The originating import module / interface path.
+    pub source: String,
+}
+
+/// The full compatibility report between a baseline and a candidate.
+#[derive(Debug, Clone)]
