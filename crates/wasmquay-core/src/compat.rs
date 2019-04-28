@@ -108,3 +108,20 @@ impl Compatibility {
 }
 
 fn export_key(e: &Export) -> (String, String) {
+    (e.field.clone(), e.kind.slug())
+}
+
+/// Compare two parsed modules for substitutability.
+pub fn compare_modules(
+    baseline: &Module,
+    baseline_name: &str,
+    candidate: &Module,
+    candidate_name: &str,
+) -> Compatibility {
+    let export_diffs = diff_exports(&baseline.exports, &candidate.exports);
+    let base_reqs = requirements_from_module(baseline);
+    let cand_reqs = requirements_from_module(candidate);
+    let capability_diffs = diff_capabilities(&base_reqs, &cand_reqs);
+
+    Compatibility {
+        baseline_name: baseline_name.to_string(),
