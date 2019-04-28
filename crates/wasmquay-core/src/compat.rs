@@ -92,3 +92,19 @@ impl Compatibility {
         for d in &self.export_diffs {
             if d.change == Change::Removed {
                 reasons.push(format!("export removed: {} ({})", d.name, d.kind));
+            }
+        }
+        for d in &self.capability_diffs {
+            if d.change == Change::Added {
+                reasons.push(format!(
+                    "new capability required: {} via {}",
+                    d.domain.slug(),
+                    d.source
+                ));
+            }
+        }
+        reasons
+    }
+}
+
+fn export_key(e: &Export) -> (String, String) {
