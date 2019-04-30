@@ -191,3 +191,19 @@ fn diff_capabilities(baseline: &[Requirement], candidate: &[Requirement]) -> Vec
                 source: source.clone(),
             });
         }
+    }
+    diffs.sort_by_key(|d| (d.domain, d.source.clone()));
+    diffs
+}
+
+fn dedup(mut v: Vec<(Domain, String)>) -> Vec<(Domain, String)> {
+    v.sort();
+    v.dedup();
+    v
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+    use crate::wasm::{ExternalKind, Import};
+
