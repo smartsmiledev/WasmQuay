@@ -207,3 +207,20 @@ mod tests {
     use super::*;
     use crate::wasm::{ExternalKind, Import};
 
+    fn export(name: &str) -> Export {
+        Export {
+            field: name.into(),
+            kind: ExternalKind::Func,
+            index: 0,
+        }
+    }
+
+    fn module_with(exports: Vec<Export>, imports: Vec<Import>) -> Module {
+        Module {
+            exports,
+            imports,
+            ..Module::default()
+        }
+    }
+
+    #[test]
