@@ -224,3 +224,19 @@ mod tests {
     }
 
     #[test]
+    fn identical_modules_are_compatible() {
+        let a = module_with(vec![export("run")], vec![]);
+        let b = module_with(vec![export("run")], vec![]);
+        let c = compare_modules(&a, "a", &b, "b");
+        assert!(c.is_compatible());
+        assert!(c.export_diffs.is_empty());
+    }
+
+    #[test]
+    fn removed_export_breaks_compatibility() {
+        let a = module_with(vec![export("run"), export("stop")], vec![]);
+        let b = module_with(vec![export("run")], vec![]);
+        let c = compare_modules(&a, "a", &b, "b");
+        assert!(!c.is_compatible());
+        assert!(c.breaking_reasons().iter().any(|r| r.contains("stop")));
+    }
