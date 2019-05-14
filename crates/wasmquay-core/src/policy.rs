@@ -67,3 +67,24 @@ impl Domain {
             "clock" => Domain::Clock,
             "network" | "net" => Domain::Network,
             "random" | "rand" => Domain::Random,
+            "stdio" => Domain::Stdio,
+            "unknown" => Domain::Unknown,
+            _ => return None,
+        })
+    }
+}
+
+/// A single classified capability requirement.
+#[derive(Debug, Clone, PartialEq, Eq)]
+pub struct Requirement {
+    /// The classified capability domain.
+    pub domain: Domain,
+    /// The originating import module namespace / interface path.
+    pub source: String,
+    /// The specific symbol / function that triggered the classification.
+    pub detail: String,
+}
+
+/// Classify a WASI preview1 function name into a domain, if recognized.
+fn classify_preview1(func: &str) -> Option<Domain> {
+    let d = if func.starts_with("fd_") || func.starts_with("path_") {
