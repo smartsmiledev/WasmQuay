@@ -88,3 +88,24 @@ pub struct Requirement {
 /// Classify a WASI preview1 function name into a domain, if recognized.
 fn classify_preview1(func: &str) -> Option<Domain> {
     let d = if func.starts_with("fd_") || func.starts_with("path_") {
+        // fd_read/fd_write on stdio fds cannot be distinguished statically, so
+        // generic fd_* / path_* are treated as filesystem access.
+        Domain::Filesystem
+    } else if func.starts_with("environ_") || func.starts_with("args_") {
+        Domain::Environment
+    } else if func.starts_with("clock_") {
+        Domain::Clock
+    } else if func.starts_with("sock_") {
+        Domain::Network
+    } else if func == "random_get" {
+        Domain::Random
+    } else {
+        return None;
+    };
+    Some(d)
+}
+
+/// Classify a preview2 / component interface path into a domain.
+fn classify_interface(path: &str) -> Option<Domain> {
+    // Paths look like `wasi:filesystem/types` or `wasi:sockets/tcp`.
+    let body = path.strip_prefix("wasi:").unwrap_or(path);
