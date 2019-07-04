@@ -213,3 +213,24 @@ impl Policy {
     /// policy "sandbox-strict"
     /// default deny
     /// allow clock
+    /// allow fs: /tmp, /var/cache
+    /// deny network
+    /// ```
+    pub fn parse(text: &str) -> Result<Policy> {
+        let mut policy = Policy::default();
+        for (lineno, raw) in text.lines().enumerate() {
+            let line = match raw.find('#') {
+                Some(i) => &raw[..i],
+                None => raw,
+            }
+            .trim();
+            if line.is_empty() {
+                continue;
+            }
+
+            if let Some(rest) = line.strip_prefix("policy ") {
+                policy.name = rest.trim().trim_matches('"').to_string();
+                continue;
+            }
+            if let Some(rest) = line.strip_prefix("default ") {
+                policy.default_allow = match rest.trim() {
