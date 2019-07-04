@@ -193,3 +193,23 @@ impl Default for Policy {
         }
     }
 }
+
+impl Policy {
+    /// Resolve the effective rule for a domain, honoring the default stance.
+    pub fn effective(&self, domain: Domain) -> DomainRule {
+        if let Some(rule) = self.rules.get(&domain) {
+            rule.clone()
+        } else {
+            DomainRule {
+                allow: self.default_allow,
+                allow_list: Vec::new(),
+            }
+        }
+    }
+
+    /// Parse a policy file. The format is documented in `docs/FORMAT.md`:
+    ///
+    /// ```text
+    /// policy "sandbox-strict"
+    /// default deny
+    /// allow clock
