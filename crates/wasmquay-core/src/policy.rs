@@ -172,3 +172,24 @@ pub struct DomainRule {
     pub allow_list: Vec<String>,
 }
 
+/// An explicit capability policy: default stance plus per-domain rules.
+#[derive(Debug, Clone, PartialEq, Eq)]
+pub struct Policy {
+    /// Policy name, for reports.
+    pub name: String,
+    /// The stance applied to any domain without an explicit rule.
+    pub default_allow: bool,
+    /// Explicit per-domain rules that override the default stance.
+    pub rules: BTreeMap<Domain, DomainRule>,
+}
+
+impl Default for Policy {
+    fn default() -> Self {
+        // Deny-by-default is the safe baseline.
+        Policy {
+            name: "default-deny".into(),
+            default_allow: false,
+            rules: BTreeMap::new(),
+        }
+    }
+}
