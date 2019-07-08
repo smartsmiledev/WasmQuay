@@ -297,3 +297,24 @@ fn parse_list(s: &str) -> Vec<String> {
         .filter(|t| !t.is_empty())
         .collect()
 }
+
+/// The verdict for a single domain after evaluation.
+#[derive(Debug, Clone, PartialEq, Eq)]
+pub struct DomainVerdict {
+    /// The capability domain this verdict concerns.
+    pub domain: Domain,
+    /// Whether the component actually requires this domain.
+    pub required: bool,
+    /// Whether the policy permits it.
+    pub allowed: bool,
+    /// The specific requirements that fed this verdict.
+    pub requirements: Vec<Requirement>,
+}
+
+impl DomainVerdict {
+    /// A violation occurs when the domain is required but not allowed.
+    pub fn is_violation(&self) -> bool {
+        self.required && !self.allowed
+    }
+}
+
