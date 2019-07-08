@@ -276,3 +276,24 @@ impl Policy {
                         "line {}: unknown capability domain '{}'",
                         lineno + 1,
                         domain_str
+                    ),
+                )
+            })?;
+            policy.rules.insert(
+                domain,
+                DomainRule {
+                    allow,
+                    allow_list: list,
+                },
+            );
+        }
+        Ok(policy)
+    }
+}
+
+fn parse_list(s: &str) -> Vec<String> {
+    s.split(',')
+        .map(|t| t.trim().to_string())
+        .filter(|t| !t.is_empty())
+        .collect()
+}
