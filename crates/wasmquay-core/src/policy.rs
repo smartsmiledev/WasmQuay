@@ -255,3 +255,24 @@ impl Policy {
             } else if let Some(r) = line.strip_prefix("deny ") {
                 (false, r)
             } else {
+                return Err(Error::new(
+                    ErrorKind::BadManifest,
+                    format!(
+                        "line {}: unrecognized policy directive '{}'",
+                        lineno + 1,
+                        line
+                    ),
+                ));
+            };
+
+            let (domain_str, list) = match body.split_once(':') {
+                Some((d, l)) => (d.trim(), parse_list(l)),
+                None => (body.trim(), Vec::new()),
+            };
+            let domain = Domain::from_slug(domain_str).ok_or_else(|| {
+                Error::new(
+                    ErrorKind::BadManifest,
+                    format!(
+                        "line {}: unknown capability domain '{}'",
+                        lineno + 1,
+                        domain_str
