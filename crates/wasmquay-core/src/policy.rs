@@ -234,3 +234,24 @@ impl Policy {
             }
             if let Some(rest) = line.strip_prefix("default ") {
                 policy.default_allow = match rest.trim() {
+                    "allow" => true,
+                    "deny" => false,
+                    other => {
+                        return Err(Error::new(
+                            ErrorKind::BadManifest,
+                            format!(
+                                "line {}: default must be allow|deny, got '{}'",
+                                lineno + 1,
+                                other
+                            ),
+                        ))
+                    }
+                };
+                continue;
+            }
+
+            let (allow, body) = if let Some(r) = line.strip_prefix("allow ") {
+                (true, r)
+            } else if let Some(r) = line.strip_prefix("deny ") {
+                (false, r)
+            } else {
