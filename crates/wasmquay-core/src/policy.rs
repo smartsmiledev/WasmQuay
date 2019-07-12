@@ -360,3 +360,24 @@ pub fn evaluate(requirements: &[Requirement], policy: &Policy) -> Evaluation {
         let reqs = by_domain.get(&domain).cloned().unwrap_or_default();
         let required = !reqs.is_empty();
         let rule = policy.effective(domain);
+        // Unknown imports are only "allowed" if the policy is explicitly
+        // permissive for the unknown bucket; otherwise they always violate.
+        verdicts.push(DomainVerdict {
+            domain,
+            required,
+            allowed: rule.allow,
+            requirements: reqs,
+        });
+    }
+
+    Evaluation {
+        policy_name: policy.name.clone(),
+        verdicts,
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+    use crate::wasm::Import;
+
