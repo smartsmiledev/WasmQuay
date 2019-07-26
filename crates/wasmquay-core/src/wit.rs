@@ -128,3 +128,19 @@ pub fn parse(text: &str) -> Result<Manifest> {
                 None => {
                     return Err(Error::new(
                         ErrorKind::BadManifest,
+                        format!("line {}: unmatched '}}'", lineno + 1),
+                    ))
+                }
+            }
+            continue;
+        }
+
+        if let Some(rest) = line.strip_prefix("import ") {
+            let iref = parse_interface_ref(rest)?;
+            push_into(&mut current, lineno, |w| w.imports.push(iref))?;
+            continue;
+        }
+
+        if let Some(rest) = line.strip_prefix("export ") {
+            let iref = parse_interface_ref(rest)?;
+            push_into(&mut current, lineno, |w| w.exports.push(iref))?;
