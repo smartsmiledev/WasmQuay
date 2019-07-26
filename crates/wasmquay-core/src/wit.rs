@@ -77,3 +77,20 @@ impl Manifest {
         v.dedup();
         v
     }
+}
+
+/// Parse a manifest from its textual form.
+pub fn parse(text: &str) -> Result<Manifest> {
+    let mut manifest = Manifest::default();
+    let mut current: Option<World> = None;
+
+    for (lineno, raw) in text.lines().enumerate() {
+        let line = strip_comment(raw).trim();
+        if line.is_empty() {
+            continue;
+        }
+
+        if let Some(rest) = line.strip_prefix("package ") {
+            if current.is_some() {
+                return Err(Error::new(
+                    ErrorKind::BadManifest,
