@@ -94,3 +94,20 @@ pub fn parse(text: &str) -> Result<Manifest> {
             if current.is_some() {
                 return Err(Error::new(
                     ErrorKind::BadManifest,
+                    format!(
+                        "line {}: 'package' cannot appear inside a world",
+                        lineno + 1
+                    ),
+                ));
+            }
+            manifest.package = Some(rest.trim().to_string());
+            continue;
+        }
+
+        if let Some(rest) = line.strip_prefix("world ") {
+            if let Some(w) = current.take() {
+                manifest.worlds.push(w);
+            }
+            let name = rest.trim_end_matches('{').trim().to_string();
+            if name.is_empty() {
+                return Err(Error::new(
