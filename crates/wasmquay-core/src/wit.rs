@@ -161,3 +161,20 @@ pub fn parse(text: &str) -> Result<Manifest> {
     if let Some(w) = current.take() {
         // A missing closing brace is tolerated; treat EOF as end of world.
         manifest.worlds.push(w);
+    }
+
+    Ok(manifest)
+}
+
+fn push_into<F: FnOnce(&mut World)>(
+    current: &mut Option<World>,
+    lineno: usize,
+    f: F,
+) -> Result<()> {
+    match current.as_mut() {
+        Some(w) => {
+            f(w);
+            Ok(())
+        }
+        None => Err(Error::new(
+            ErrorKind::BadManifest,
