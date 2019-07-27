@@ -195,3 +195,20 @@ fn parse_interface_ref(rest: &str) -> Result<InterfaceRef> {
         Ok(InterfaceRef {
             path: path.to_string(),
             signature: Some(sig.to_string()),
+        })
+    } else {
+        Ok(InterfaceRef {
+            path: rest.to_string(),
+            signature: None,
+        })
+    }
+}
+
+/// Find the byte index of a `:` that is immediately followed by whitespace.
+fn find_signature_boundary(s: &str) -> Option<usize> {
+    let bytes = s.as_bytes();
+    for (i, &b) in bytes.iter().enumerate() {
+        if b == b':' {
+            match bytes.get(i + 1) {
+                Some(next) if next.is_ascii_whitespace() => return Some(i),
+                None => return Some(i),
