@@ -212,3 +212,20 @@ fn find_signature_boundary(s: &str) -> Option<usize> {
             match bytes.get(i + 1) {
                 Some(next) if next.is_ascii_whitespace() => return Some(i),
                 None => return Some(i),
+                _ => {}
+            }
+        }
+    }
+    None
+}
+
+fn strip_comment(line: &str) -> &str {
+    match line.find("//") {
+        Some(idx) => &line[..idx],
+        None => line,
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
