@@ -229,3 +229,20 @@ fn strip_comment(line: &str) -> &str {
 #[cfg(test)]
 mod tests {
     use super::*;
+
+    const SAMPLE: &str = r#"
+        package acme:image@1.0.0
+        // a comment
+        world processor {
+            import wasi:filesystem/types
+            import wasi:clocks/wall-clock
+            export process: func(input: list<u8>) -> list<u8>
+        }
+    "#;
+
+    #[test]
+    fn parses_package_and_world() {
+        let m = parse(SAMPLE).unwrap();
+        assert_eq!(m.package.as_deref(), Some("acme:image@1.0.0"));
+        assert_eq!(m.worlds.len(), 1);
+        assert_eq!(m.worlds[0].name, "processor");
