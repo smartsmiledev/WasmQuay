@@ -103,3 +103,19 @@ fn run(args: &[String]) -> Result<ExitCode, String> {
         "compat" => cmd_compat(rest, format),
         "manifest" => cmd_manifest(rest, format),
         "gen-fixtures" => cmd_gen_fixtures(rest),
+        other => Err(format!("unknown command '{}'\n\n{}", other, USAGE)),
+    }
+}
+
+fn read_file(path: &str) -> Result<Vec<u8>, String> {
+    std::fs::read(path).map_err(|e| format!("cannot read '{}': {}", path, e))
+}
+
+fn read_text(path: &str) -> Result<String, String> {
+    std::fs::read_to_string(path).map_err(|e| format!("cannot read '{}': {}", path, e))
+}
+
+fn label_of(path: &str) -> String {
+    Path::new(path)
+        .file_name()
+        .and_then(|s| s.to_str())
