@@ -86,3 +86,20 @@ fn run(args: &[String]) -> Result<ExitCode, String> {
                 }
             }
             "--pretty" => format = Format::PrettyJson,
+            flag if flag.starts_with('-') => {
+                return Err(format!("unknown flag '{}'\n\n{}", flag, USAGE));
+            }
+            other => positional.push(other.to_string()),
+        }
+    }
+
+    let command = positional.first().cloned().unwrap_or_default();
+    let rest = &positional[1.min(positional.len())..];
+
+    match command.as_str() {
+        "inspect" => cmd_inspect(rest, format),
+        "caps" => cmd_caps(rest, format),
+        "policy" => cmd_policy(rest, format),
+        "compat" => cmd_compat(rest, format),
+        "manifest" => cmd_manifest(rest, format),
+        "gen-fixtures" => cmd_gen_fixtures(rest),
