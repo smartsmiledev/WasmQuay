@@ -119,3 +119,20 @@ fn label_of(path: &str) -> String {
     Path::new(path)
         .file_name()
         .and_then(|s| s.to_str())
+        .unwrap_or(path)
+        .to_string()
+}
+
+fn emit_json(json: wasmquay_core::json::Json, format: Format) {
+    match format {
+        Format::PrettyJson => println!("{}", json.to_pretty()),
+        _ => println!("{}", json.to_compact()),
+    }
+}
+
+fn cmd_inspect(rest: &[String], format: Format) -> Result<ExitCode, String> {
+    let path = rest.first().ok_or_else(|| usage("inspect <file.wasm>"))?;
+    let bytes = read_file(path)?;
+    let module = wasm::parse(&bytes).map_err(|e| e.to_string())?;
+    let reqs = policy::requirements_from_module(&module);
+    let label = label_of(path);
