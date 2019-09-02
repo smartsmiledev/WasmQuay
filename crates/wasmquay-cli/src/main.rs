@@ -153,3 +153,19 @@ fn cmd_caps(rest: &[String], format: Format) -> Result<ExitCode, String> {
             if reqs.is_empty() {
                 println!("(no host imports — module is self-contained)");
             }
+            for r in &reqs {
+                println!("{:<8} {} :: {}", r.domain.slug(), r.source, r.detail);
+            }
+        }
+        _ => emit_json(
+            report::inspection_json(&module, &label_of(path), &reqs),
+            format,
+        ),
+    }
+    Ok(ExitCode::SUCCESS)
+}
+
+fn cmd_policy(rest: &[String], format: Format) -> Result<ExitCode, String> {
+    let wasm_path = rest
+        .first()
+        .ok_or_else(|| usage("policy <file.wasm> <policy.pol>"))?;
