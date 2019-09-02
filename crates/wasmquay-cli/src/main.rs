@@ -203,3 +203,19 @@ fn cmd_compat(rest: &[String], format: Format) -> Result<ExitCode, String> {
         _ => emit_json(report::compatibility_json(&comp), format),
     }
     if comp.is_compatible() {
+        Ok(ExitCode::SUCCESS)
+    } else {
+        Ok(ExitCode::from(3))
+    }
+}
+
+fn cmd_manifest(rest: &[String], format: Format) -> Result<ExitCode, String> {
+    let path = rest.first().ok_or_else(|| usage("manifest <file.wit>"))?;
+    let text = read_text(path)?;
+    let manifest = wit::parse(&text).map_err(|e| e.to_string())?;
+    let reqs = policy::requirements_from_manifest(&manifest);
+    match format {
+        Format::Text => {
+            if let Some(pkg) = &manifest.package {
+                println!("package: {}", pkg);
+            }
