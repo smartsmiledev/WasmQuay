@@ -169,3 +169,20 @@ fn cmd_policy(rest: &[String], format: Format) -> Result<ExitCode, String> {
     let wasm_path = rest
         .first()
         .ok_or_else(|| usage("policy <file.wasm> <policy.pol>"))?;
+    let pol_path = rest
+        .get(1)
+        .ok_or_else(|| usage("policy <file.wasm> <policy.pol>"))?;
+    let bytes = read_file(wasm_path)?;
+    let module = wasm::parse(&bytes).map_err(|e| e.to_string())?;
+    let reqs = policy::requirements_from_module(&module);
+    let pol = policy::Policy::parse(&read_text(pol_path)?).map_err(|e| e.to_string())?;
+    let eval = policy::evaluate(&reqs, &pol);
+    match format {
+        Format::Text => print!("{}", report::evaluation_text(&eval)),
+        _ => emit_json(report::evaluation_json(&eval), format),
+    }
+    if eval.is_compliant() {
+        Ok(ExitCode::SUCCESS)
+    } else {
+        Ok(ExitCode::from(3))
+    }
