@@ -219,3 +219,20 @@ fn cmd_manifest(rest: &[String], format: Format) -> Result<ExitCode, String> {
             if let Some(pkg) = &manifest.package {
                 println!("package: {}", pkg);
             }
+            for world in &manifest.worlds {
+                println!(
+                    "world {} ({} imports, {} exports)",
+                    world.name,
+                    world.imports.len(),
+                    world.exports.len()
+                );
+            }
+            println!("classified capability domains:");
+            for r in &reqs {
+                println!("  {:<8} {}", r.domain.slug(), r.source);
+            }
+        }
+        _ => {
+            use wasmquay_core::json::Json;
+            let worlds = manifest
+                .worlds
