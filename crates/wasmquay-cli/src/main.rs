@@ -236,3 +236,20 @@ fn cmd_manifest(rest: &[String], format: Format) -> Result<ExitCode, String> {
             use wasmquay_core::json::Json;
             let worlds = manifest
                 .worlds
+                .iter()
+                .map(|w| {
+                    Json::obj(vec![
+                        ("name", Json::s(w.name.clone())),
+                        (
+                            "imports",
+                            Json::str_arr(w.imports.iter().map(|i| i.path.clone())),
+                        ),
+                        (
+                            "exports",
+                            Json::str_arr(w.exports.iter().map(|i| i.path.clone())),
+                        ),
+                    ])
+                })
+                .collect();
+            let caps = reqs
+                .iter()
