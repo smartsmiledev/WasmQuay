@@ -269,3 +269,20 @@ fn cmd_manifest(rest: &[String], format: Format) -> Result<ExitCode, String> {
                         None => Json::Null,
                     },
                 ),
+                ("worlds", Json::Arr(worlds)),
+                ("capabilities", Json::Arr(caps)),
+            ]);
+            emit_json(doc, format);
+        }
+    }
+    Ok(ExitCode::SUCCESS)
+}
+
+/// Write the bundled deterministic fixtures. These are the exact binaries the
+/// examples and tests reference, generated from the encoder so the repository
+/// need not commit opaque blobs (though it also ships copies under `fixtures/`).
+fn cmd_gen_fixtures(rest: &[String]) -> Result<ExitCode, String> {
+    let dir = rest.first().ok_or_else(|| usage("gen-fixtures <dir>"))?;
+    std::fs::create_dir_all(dir).map_err(|e| format!("cannot create '{}': {}", dir, e))?;
+
+    for (name, bytes) in bundled_fixtures() {
