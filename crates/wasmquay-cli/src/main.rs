@@ -286,3 +286,20 @@ fn cmd_gen_fixtures(rest: &[String]) -> Result<ExitCode, String> {
     std::fs::create_dir_all(dir).map_err(|e| format!("cannot create '{}': {}", dir, e))?;
 
     for (name, bytes) in bundled_fixtures() {
+        let path = Path::new(dir).join(name);
+        std::fs::write(&path, &bytes)
+            .map_err(|e| format!("cannot write '{}': {}", path.display(), e))?;
+        println!("wrote {} ({} bytes)", path.display(), bytes.len());
+    }
+    Ok(ExitCode::SUCCESS)
+}
+
+/// The canonical set of fixtures shared by the CLI, tests and examples.
+pub fn bundled_fixtures() -> Vec<(&'static str, Vec<u8>)> {
+    vec![
+        (
+            // A well-behaved service: clock + stdio only.
+            "clock-service.wasm",
+            FixtureBuilder::new()
+                .module_name("clock-service")
+                .import_func("wasi_snapshot_preview1", "clock_time_get")
