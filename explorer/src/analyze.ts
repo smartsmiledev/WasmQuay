@@ -27,3 +27,15 @@ export const DOMAIN_WEIGHT: Readonly<Record<Domain, number>> = {
 /** A short rationale shown alongside each domain in explanations. */
 export const DOMAIN_RATIONALE: Readonly<Record<Domain, string>> = {
   network: "can open sockets / exfiltrate data",
+  fs: "can read or modify files",
+  unknown: "imports an unrecognized host — treat as untrusted",
+  env: "can read environment variables and arguments",
+  random: "consumes a randomness source",
+  clock: "can read wall/monotonic clocks",
+  stdio: "uses standard input/output streams",
+};
+
+/** The risk band a component falls into. */
+export type RiskBand = "inert" | "low" | "moderate" | "elevated" | "high";
+
+/** The result of analyzing a single inspection report. */
