@@ -64,3 +64,15 @@ export function riskScore(report: InspectionReport): number {
     // with diminishing returns so one noisy domain cannot dominate.
     const base = DOMAIN_WEIGHT[group.domain] ?? 0;
     const breadth = 1 + Math.log2(1 + group.requirements.length);
+    score += base * breadth;
+  }
+  return Math.round(score * 10) / 10;
+}
+
+/** Bucket a raw score into a named band. */
+export function riskBand(score: number): RiskBand {
+  if (score <= 0) return "inert";
+  if (score < 2) return "low";
+  if (score < 6) return "moderate";
+  if (score < 12) return "elevated";
+  return "high";
