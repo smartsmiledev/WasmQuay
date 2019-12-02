@@ -76,3 +76,16 @@ export function riskBand(score: number): RiskBand {
   if (score < 6) return "moderate";
   if (score < 12) return "elevated";
   return "high";
+}
+
+/** Build the full capability surface for an inspection report. */
+export function analyzeSurface(report: InspectionReport): CapabilitySurface {
+  const counts: Record<string, number> = {};
+  for (const group of report.capabilities) {
+    counts[group.domain] = group.requirements.length;
+  }
+
+  const domains = report.capabilities
+    .map((g) => g.domain)
+    .slice()
+    .sort((a, b) => (DOMAIN_WEIGHT[b] ?? 0) - (DOMAIN_WEIGHT[a] ?? 0));
