@@ -89,3 +89,15 @@ export function analyzeSurface(report: InspectionReport): CapabilitySurface {
     .map((g) => g.domain)
     .slice()
     .sort((a, b) => (DOMAIN_WEIGHT[b] ?? 0) - (DOMAIN_WEIGHT[a] ?? 0));
+
+  const score = riskScore(report);
+  return {
+    source: report.source,
+    moduleName: report.header.module_name,
+    domains,
+    score,
+    band: riskBand(score),
+    counts,
+    hasUnknown: report.capabilities.some((g) => g.domain === "unknown"),
+    importCount: report.imports.length,
+    exportCount: report.exports.length,
