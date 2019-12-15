@@ -101,3 +101,16 @@ export function analyzeSurface(report: InspectionReport): CapabilitySurface {
     hasUnknown: report.capabilities.some((g) => g.domain === "unknown"),
     importCount: report.imports.length,
     exportCount: report.exports.length,
+  };
+}
+
+/** A single reconciliation finding between an inspection and a policy. */
+export interface Finding {
+  readonly domain: Domain;
+  readonly severity: "ok" | "note" | "violation";
+  readonly message: string;
+}
+
+/**
+ * Cross-check an inspection against a policy report for the same component.
+ *
