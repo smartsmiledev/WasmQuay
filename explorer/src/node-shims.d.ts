@@ -13,3 +13,8 @@ declare module "node:fs" {
 declare module "node:process" {
   const proc: {
     readonly argv: string[];
+    exit(code?: number): never;
+    readonly stdout: { write(s: string): boolean };
+    readonly stderr: { write(s: string): boolean };
+  };
+  export default proc;
