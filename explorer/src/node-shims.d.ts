@@ -18,3 +18,9 @@ declare module "node:process" {
     readonly stderr: { write(s: string): boolean };
   };
   export default proc;
+}
+
+declare const console: {
+  log(...args: unknown[]): void;
+  error(...args: unknown[]): void;
+};
