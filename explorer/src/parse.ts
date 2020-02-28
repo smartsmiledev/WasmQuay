@@ -33,3 +33,17 @@ function requireString(obj: Record<string, unknown>, key: string): string {
     throw new ReportError(`expected string field '${key}'`);
   }
   return v;
+}
+
+function requireNumber(obj: Record<string, unknown>, key: string): number {
+  const v = obj[key];
+  if (typeof v !== "number") {
+    throw new ReportError(`expected number field '${key}'`);
+  }
+  return v;
+}
+
+function requireBool(obj: Record<string, unknown>, key: string): boolean {
+  const v = obj[key];
+  if (typeof v !== "boolean") {
+    throw new ReportError(`expected boolean field '${key}'`);
