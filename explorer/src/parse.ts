@@ -76,3 +76,17 @@ export function parseInspection(text: string): InspectionReport {
   if (!isObject(header)) {
     throw new ReportError("inspection report missing 'header'");
   }
+  const capabilities = requireArray(doc, "capabilities").map((g) => {
+    if (!isObject(g)) throw new ReportError("capability group must be an object");
+    const reqs = requireArray(g, "requirements").map((r) => {
+      if (!isObject(r)) throw new ReportError("requirement must be an object");
+      return { source: requireString(r, "source"), detail: requireString(r, "detail") };
+    });
+    return { domain: asDomain(g.domain), requirements: reqs };
+  });
+
+  // The parsed structure is validated field-by-field above; the cast is safe.
+  return {
+    schema: requireString(doc, "schema"),
+    source: requireString(doc, "source"),
+    header: {
