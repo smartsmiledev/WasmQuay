@@ -61,3 +61,18 @@ function requireArray(obj: Record<string, unknown>, key: string): unknown[] {
 
 function asDomain(v: unknown): Domain {
   if (typeof v === "string" && (ALL_DOMAINS as readonly string[]).includes(v)) {
+    return v as Domain;
+  }
+  throw new ReportError(`unknown capability domain '${String(v)}'`);
+}
+
+/** Parse and validate an inspection report from a JSON string. */
+export function parseInspection(text: string): InspectionReport {
+  const doc = parseJson(text);
+  if (!doc.schema || !String(doc.schema).startsWith("wasmquay/inspection")) {
+    throw new ReportError(`not an inspection report (schema='${String(doc.schema)}')`);
+  }
+  const header = doc.header;
+  if (!isObject(header)) {
+    throw new ReportError("inspection report missing 'header'");
+  }
