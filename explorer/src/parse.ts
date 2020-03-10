@@ -104,3 +104,17 @@ export function parseInspection(text: string): InspectionReport {
         custom_name: so.custom_name === null ? null : String(so.custom_name),
         offset: requireNumber(so, "offset"),
         size: requireNumber(so, "size"),
+      };
+    }),
+    imports: requireArray(doc, "imports").map((i) => {
+      const io = asObject(i, "import");
+      return {
+        module: requireString(io, "module"),
+        field: requireString(io, "field"),
+        kind: requireString(io, "kind"),
+      };
+    }),
+    exports: requireArray(doc, "exports").map((e) => {
+      const eo = asObject(e, "export");
+      return {
+        field: requireString(eo, "field"),
