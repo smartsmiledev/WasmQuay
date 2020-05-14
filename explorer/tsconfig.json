@@ -4,3 +4,6 @@
     "module": "NodeNext",
     "moduleResolution": "NodeNext",
     "lib": ["ES2022"],
+    "declaration": true,
+    "outDir": "dist",
+    "rootDir": "src",
