@@ -15,3 +15,10 @@ The binary modules live in `../fixtures/` and are regenerated with
 `wasmquay gen-fixtures`.
 
 ## Captured reports (JSON)
+
+| File                     | Command that produced it                                          |
+|--------------------------|-------------------------------------------------------------------|
+| `clock-inspection.json`  | `wasmquay inspect fixtures/clock-service.wasm --pretty`           |
+| `net-inspection.json`    | `wasmquay inspect fixtures/net-service.wasm --pretty`             |
+| `net-policy.json`        | `wasmquay policy fixtures/net-service.wasm sandbox-strict.pol --pretty` |
+| `compat-clock-net.json`  | `wasmquay compat fixtures/clock-service.wasm fixtures/net-service.wasm --pretty` |
