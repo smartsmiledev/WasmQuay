@@ -23,3 +23,20 @@
       "size": 7
     },
     {
+      "id": 0,
+      "name": "custom",
+      "custom_name": "name",
+      "offset": 110,
+      "size": 29
+    }
+  ],
+  "imports": [
+    {
+      "module": "wasi_snapshot_preview1",
+      "field": "clock_time_get",
+      "kind": "func"
+    },
+    {
+      "module": "wasi_snapshot_preview1",
+      "field": "fd_write",
+      "kind": "func"
