@@ -22,3 +22,10 @@ The binary modules live in `../fixtures/` and are regenerated with
 | `net-inspection.json`    | `wasmquay inspect fixtures/net-service.wasm --pretty`             |
 | `net-policy.json`        | `wasmquay policy fixtures/net-service.wasm sandbox-strict.pol --pretty` |
 | `compat-clock-net.json`  | `wasmquay compat fixtures/clock-service.wasm fixtures/net-service.wasm --pretty` |
+
+## Try it
+
+```sh
+# 1. Build the CLI and (re)generate the fixtures.
+cargo build --release
+./target/release/wasmquay gen-fixtures fixtures
