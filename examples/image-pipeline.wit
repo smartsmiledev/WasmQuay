@@ -1,2 +1,7 @@
 // wasmquay WIT-like interface manifest (see docs/FORMAT.md).
 // Describes an image-processing component's host requirements and surface.
+
+package acme:image-pipeline@1.4.0
+
+world processor {
+    // Host requirements (imports).
