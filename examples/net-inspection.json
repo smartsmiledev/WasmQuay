@@ -60,3 +60,21 @@
   "exports": [
     {
       "field": "run",
+      "kind": "func",
+      "index": 0
+    }
+  ],
+  "names": [
+    {
+      "index": 0,
+      "name": "run"
+    }
+  ],
+  "capabilities": [
+    {
+      "domain": "fs",
+      "requirements": [
+        {
+          "source": "wasi_snapshot_preview1",
+          "detail": "fd_write"
+        }
