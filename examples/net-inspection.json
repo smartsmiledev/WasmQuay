@@ -43,3 +43,20 @@
     },
     {
       "module": "wasi_snapshot_preview1",
+      "field": "sock_recv",
+      "kind": "func"
+    },
+    {
+      "module": "wasi_snapshot_preview1",
+      "field": "sock_send",
+      "kind": "func"
+    },
+    {
+      "module": "env",
+      "field": "memory",
+      "kind": "memory"
+    }
+  ],
+  "exports": [
+    {
+      "field": "run",
