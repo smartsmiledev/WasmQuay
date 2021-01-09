@@ -30,3 +30,15 @@ jobs:
       - name: Test
         run: cargo test --verbose
       - name: Regenerate fixtures and inspect
+        shell: bash
+        run: |
+          ./target/release/wasmquay gen-fixtures fixtures
+          ./target/release/wasmquay inspect fixtures/net-service.wasm --pretty
+
+  typescript:
+    name: typescript
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Install Node
+        uses: actions/setup-node@v4
