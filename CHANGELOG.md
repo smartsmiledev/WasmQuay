@@ -12,3 +12,4 @@ adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 - Static TypeScript explorer: renders the typed manifest without any runtime.
 - Fixture suite for real-world `.wasm` binaries and golden JSON reports.
 - GitHub Actions CI: cargo build/test matrix + tsc typecheck for the explorer.
+
