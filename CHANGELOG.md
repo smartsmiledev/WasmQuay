@@ -14,3 +14,4 @@ adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 - GitHub Actions CI: cargo build/test matrix + tsc typecheck for the explorer.
 
 ### Changed
+- `report` output is now a fully typed JSON manifest (schema-stable keys).
