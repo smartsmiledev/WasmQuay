@@ -16,3 +16,4 @@ adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 ### Changed
 - `report` output is now a fully typed JSON manifest (schema-stable keys).
 - Capability gate exit codes documented for CI blocking.
+
