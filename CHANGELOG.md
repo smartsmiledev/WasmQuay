@@ -18,3 +18,4 @@ adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 - Capability gate exit codes documented for CI blocking.
 
 ## [0.4.0] - 2024-07-30
+
