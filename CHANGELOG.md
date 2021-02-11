@@ -23,3 +23,4 @@ adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 - `wit` module: parses WebAssembly interface types into a typed model.
 - `compat` checker: flags component/model version mismatches.
 - `policy` matcher: wildcard import allowances and deny-by-default rules.
+
