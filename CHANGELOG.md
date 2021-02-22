@@ -26,3 +26,4 @@ adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ### Changed
 - Error taxonomy (`error.rs`) with stable machine-readable codes.
+
