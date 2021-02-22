@@ -28,3 +28,4 @@ adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 - Error taxonomy (`error.rs`) with stable machine-readable codes.
 
 ## [0.3.0] - 2022-11-02
+
