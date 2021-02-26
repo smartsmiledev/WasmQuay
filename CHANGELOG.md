@@ -31,3 +31,4 @@ adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ### Added
 - Capability classification: imports are grouped into host capability
+  families (fs, net, clock, random, env).
