@@ -36,3 +36,4 @@ adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 - Makefile targets for the full offline pipeline.
 
 ## [0.2.0] - 2021-03-19
+
