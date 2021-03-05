@@ -38,3 +38,4 @@ adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 ## [0.2.0] - 2021-03-19
 
 ### Added
+- `json` writer: canonical, deterministic JSON output (sorted keys).
