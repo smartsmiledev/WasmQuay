@@ -43,3 +43,4 @@ adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ### Changed
 - Decoder hardening: bounds-checked LEB128 reads, section table validation.
+
