@@ -48,3 +48,4 @@ adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ### Added
 - Full WebAssembly core binary decoder: header, section table, imports,
+  memory, tables, globals, functions, code sections.
