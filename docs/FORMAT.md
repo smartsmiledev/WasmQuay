@@ -62,3 +62,20 @@ iref        := path (": " signature)?        ; ": " = colon + whitespace
 ### Example
 
 ```
+package acme:image-pipeline@1.4.0
+
+world processor {
+    import wasi:filesystem/types
+    import wasi:clocks/wall-clock
+    export process: func(input: list<u8>) -> list<u8>
+}
+```
+
+---
+
+## 3. Capability policy (`.pol`)
+
+A line-oriented policy describing which capability domains a component may use.
+
+### Grammar
+
