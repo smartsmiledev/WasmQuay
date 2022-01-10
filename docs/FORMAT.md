@@ -105,3 +105,21 @@ Imports are classified into domains as follows:
 |----------------------------------------|------------|
 | `wasi_snapshot_preview1` `fd_*`,`path_*`| `fs`       |
 | `..._preview1` `environ_*`,`args_*`     | `env`      |
+| `..._preview1` `clock_*`                | `clock`    |
+| `..._preview1` `sock_*`                 | `network`  |
+| `..._preview1` `random_get`             | `random`   |
+| `wasi:filesystem/*`                     | `fs`       |
+| `wasi:cli/*`                            | `env`      |
+| `wasi:clocks/*`                         | `clock`    |
+| `wasi:sockets/*`                        | `network`  |
+| `wasi:random/*`                         | `random`   |
+| `wasi:io/*`                             | `stdio`    |
+| anything else                           | `unknown`  |
+
+Non-function imports (memories, tables, globals) do not by themselves grant a
+host capability and are excluded from classification.
+
+---
+
+## 4. JSON reports
+
