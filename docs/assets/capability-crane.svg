@@ -48,3 +48,10 @@
     <text x="225" y="222" font-family="monospace" font-size="12" fill="#6ff0aa" text-anchor="middle">allow</text>
     <g font-family="monospace" font-size="11" fill="#3ddc84">
       <text x="168" y="256">clock ✓</text>
+      <text x="168" y="276">stdio ✓</text>
+      <text x="168" y="296">fs:/tmp ✓</text>
+    </g>
+  </g>
+
+  <!-- DENY bin (red) -->
+  <g filter="url(#g2)">
