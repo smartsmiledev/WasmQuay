@@ -57,3 +57,21 @@ iref        := path (": " signature)?        ; ": " = colon + whitespace
   (e.g. `export process: func(...)`). A `:` inside a path
   (`wasi:filesystem/types`) is part of the path.
 * A missing closing `}` at end of file is tolerated.
+* `import`/`export` outside a `world` is an error.
+
+### Example
+
+```
+package acme:image-pipeline@1.4.0
+
+world processor {
+    import wasi:filesystem/types
+    import wasi:clocks/wall-clock
+    export process: func(input: list<u8>) -> list<u8>
+}
+```
+
+---
+
+## 3. Capability policy (`.pol`)
+
