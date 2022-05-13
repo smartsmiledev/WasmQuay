@@ -110,3 +110,20 @@ Imports are classified into domains as follows:
 | `..._preview1` `random_get`             | `random`   |
 | `wasi:filesystem/*`                     | `fs`       |
 | `wasi:cli/*`                            | `env`      |
+| `wasi:clocks/*`                         | `clock`    |
+| `wasi:sockets/*`                        | `network`  |
+| `wasi:random/*`                         | `random`   |
+| `wasi:io/*`                             | `stdio`    |
+| anything else                           | `unknown`  |
+
+Non-function imports (memories, tables, globals) do not by themselves grant a
+host capability and are excluded from classification.
+
+---
+
+## 4. JSON reports
+
+All reports are UTF-8 JSON objects with a `schema` discriminator. Object key
+order is stable across runs.
+
+### 4.1 `wasmquay/inspection@1`
