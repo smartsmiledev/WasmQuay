@@ -27,3 +27,20 @@ Integers use LEB128 (unsigned or signed as the grammar dictates).
 External `kind` bytes: `0x00` func, `0x01` table, `0x02` memory, `0x03` global.
 Any other byte is preserved as `other:0xNN`.
 
+**Scope note.** The decoder walks *all* sections structurally (id, offset,
+size) and deep-decodes the import, export and `name` sections — the pieces that
+determine a component's capability surface. It does not decode the code section
+body or component-model type definitions.
+
+---
+
+## 2. WIT-like interface manifest (`.wit`)
+
+A deliberately small, line-oriented subset that captures interface imports and
+exports. It is **not** full WIT.
+
+### Grammar
+
+```
+manifest    := (line)*
+line        := blank | comment | package | world-open | world-close | decl
