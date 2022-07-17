@@ -167,3 +167,41 @@ WasmQuay <COMMAND> [ARGS] [--json] [--pretty]
   policy <file.wasm> <policy.pol>     evaluate a module against a policy
   compat <baseline.wasm> <cand.wasm>  compare two modules for compatibility
   manifest <file.wit>                 parse a WIT-like interface manifest
+  gen-fixtures <dir>                  write the bundled .wasm fixtures
+```
+
+Exit codes are CI-shaped: `0` ok/compliant/compatible · `1` usage · `2`
+parse/IO · `3` policy violation or incompatibility.
+
+### `inspect` — read the binary
+
+```console
+$ ./target/release/WasmQuay inspect fixtures/clock-service.wasm --pretty
+{
+  "schema": "WasmQuay/inspection@1",
+  "source": "clock-service.wasm",
+  "header": { "magic": "\\0asm", "version": 1, "byte_length": 139, "module_name": "clock-service" },
+  "sections": [
+    { "id": 2, "name": "import", "custom_name": null, "offset": 10, "size": 89 },
+    { "id": 7, "name": "export", "custom_name": null, "offset": 101, "size": 7 },
+    { "id": 0, "name": "custom", "custom_name": "name", "offset": 110, "size": 29 }
+  ],
+  "imports": [
+    { "module": "wasi_snapshot_preview1", "field": "clock_time_get", "kind": "func" },
+    { "module": "wasi_snapshot_preview1", "field": "fd_write", "kind": "func" },
+    { "module": "env", "field": "memory", "kind": "memory" }
+  ],
+  "exports": [ { "field": "run", "kind": "func", "index": 0 } ],
+  "names": [ { "index": 0, "name": "run" } ],
+  "capabilities": [
+    { "domain": "fs",    "requirements": [ { "source": "wasi_snapshot_preview1", "detail": "fd_write" } ] },
+    { "domain": "clock", "requirements": [ { "source": "wasi_snapshot_preview1", "detail": "clock_time_get" } ] }
+  ]
+}
+```
+
+Every offset and size above is read from the actual bytes — you can seek to
+`offset` in the file and find exactly that section payload.
+
+### `caps` — just the capability surface
+
