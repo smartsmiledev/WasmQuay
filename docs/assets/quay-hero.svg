@@ -69,3 +69,11 @@
       <text x="640" y="184" fill="#a684e0" text-anchor="middle">unknown?</text>
     </g>
   </g>
+
+  <!-- title cluster -->
+  <g font-family="'Consolas','SFMono-Regular',monospace">
+    <text x="36" y="52" fill="#22e3c9" font-size="34" font-weight="700" filter="url(#glow)">wasmquay</text>
+    <text x="38" y="76" fill="#6fd3e6" font-size="13">offline wasm component inspection · capability policy</text>
+    <g font-size="12">
+      <text x="38" y="98" fill="#3f7f96">$</text>
+      <text x="52" y="98" fill="#c6f7ee">wasmquay policy net-svc.wasm sandbox.pol</text>
