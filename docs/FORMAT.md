@@ -136,3 +136,20 @@ order is stable across runs.
   "sections": [ { "id": 2, "name": "import", "custom_name": null, "offset": 10, "size": 90 } ],
   "imports":  [ { "module": "wasi_snapshot_preview1", "field": "sock_recv", "kind": "func" } ],
   "exports":  [ { "field": "run", "kind": "func", "index": 0 } ],
+  "names":    [ { "index": 0, "name": "run" } ],
+  "capabilities": [
+    { "domain": "network", "requirements": [ { "source": "wasi_snapshot_preview1", "detail": "sock_recv" } ] }
+  ]
+}
+```
+
+`module_name` and `custom_name` are `null` when absent.
+
+### 4.2 `wasmquay/policy@1`
+
+```json
+{
+  "schema": "wasmquay/policy@1",
+  "policy": "sandbox-strict",
+  "compliant": false,
+  "violations": ["network"],
