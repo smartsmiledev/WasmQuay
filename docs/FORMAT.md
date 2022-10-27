@@ -153,3 +153,21 @@ order is stable across runs.
   "policy": "sandbox-strict",
   "compliant": false,
   "violations": ["network"],
+  "verdicts": [
+    { "domain": "network", "required": true, "allowed": false, "violation": true,
+      "requirements": ["wasi_snapshot_preview1 :: sock_recv"] }
+  ]
+}
+```
+
+A `verdict` exists for every domain; `required` marks the ones the component
+actually uses. `violation == required && !allowed`.
+
+### 4.3 `wasmquay/compat@1`
+
+```json
+{
+  "schema": "wasmquay/compat@1",
+  "baseline": "clock-service.wasm",
+  "candidate": "net-service.wasm",
+  "compatible": false,
