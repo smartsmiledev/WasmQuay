@@ -71,3 +71,41 @@ against a policy you write in plain text.
 > a runtime and makes no runtime-enforcement claims. When the docs say
 > "enforce", they mean *analyze against a stated policy at inspection time* —
 > the kind of check you run in CI, not an interception layer around a live
+> module. Everything it reports is derived from bytes on disk. That honesty is a
+> feature: the analysis is deterministic, offline, and auditable.
+
+What it genuinely does, verified by its own test suite:
+
+- **Decodes** the WebAssembly core binary format: the `\0asm` header, the
+  section table (ids/offsets/sizes), the import and export sections, and the
+  custom `name` section (module + function names).
+- **Classifies** every host import into `fs · env · clock · network · random ·
+  stdio · unknown`, covering both WASI preview1 function names and preview2 /
+  component-model interface paths.
+- **Evaluates** a component's capability set against an explicit, deny-by-default
+  policy with per-domain allow-lists.
+- **Compares** two components for substitutability (is B a safe drop-in for A?).
+- **Reads** a documented WIT-like interface manifest subset.
+- **Emits** stable, versioned JSON and human text — consumed by a companion
+  **TypeScript explorer** that computes risk scores and reconciles findings.
+
+---
+
+## `0x02` — Architecture
+
+```text
+        ┌──────────────────────── RUST (std-only) ─────────────────────────┐
+        │                                                                   │
+  .wasm │   leb ──▶ wasm ──▶ policy ──▶ compat                              │
+  ──────┼─▶ ┌─────┐  ┌────┐  ┌──────┐  ┌──────┐        ┌──────────┐         │
+  .wit  │   │bytes│  │decode│ │classify││diff │  ──────▶│  report  │─┐       │
+  ──────┼─▶ │+LEB │  │hdr/  │ │fs/env/ ││expo │        │ json/txt │ │       │
+  .pol  │   │     │  │sect/ │ │clock/  ││caps │        └──────────┘ │       │
+  ──────┼─▶ └─────┘  │imp/  │ │net/... │└──────┘             ▲       │       │
+        │            │exp/  │ └──────┘                       │       │       │
+        │            │name  │              fixture ──────────┘       │       │
+        │            └──────┘              (binary encoder)          │       │
+        └────────────────────────────────────────────────────────────┼──────┘
+                                                                       │ JSON
+        ┌──────────────────── TYPESCRIPT (tsc-only) ───────────────────▼──────┐
+        │   parse (schema guards) ──▶ analyze (risk + reconcile) ──▶ render    │
