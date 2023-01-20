@@ -36,3 +36,20 @@ body or component-model type definitions.
 
 ## 2. WIT-like interface manifest (`.wit`)
 
+A deliberately small, line-oriented subset that captures interface imports and
+exports. It is **not** full WIT.
+
+### Grammar
+
+```
+manifest    := (line)*
+line        := blank | comment | package | world-open | world-close | decl
+comment     := "//" .*                      ; also allowed at end of line
+package     := "package" WS text
+world-open  := "world" WS name ("{")?
+world-close := "}"
+decl        := ("import" | "export") WS iref
+iref        := path (": " signature)?        ; ": " = colon + whitespace
+```
+
+* Blank lines and `//` comments are ignored anywhere.
