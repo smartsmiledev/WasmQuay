@@ -300,3 +300,41 @@ policy 'sandbox-strict': VIOLATION
 
 Rank several components by static risk:
 
+```console
+$ node explorer/dist/cli.js rank net.json clock.json
+capability risk ranking (highest first):
+  1. net-service.wasm         HIGH      score=22.9
+  2. clock-service.wasm       ELEVATED  score=10
+```
+
+The risk score weights domains by blast radius (`network`/`unknown` = 5,
+`fs` = 4, `env` = 2, `clock`/`random`/`stdio` = 1) and scales sub-linearly with
+how many distinct entry points a domain has, so one chatty domain can't drown
+out the signal. The exact weights and bands live in
+[`explorer/src/analyze.ts`](explorer/src/analyze.ts).
+
+Use it as a library, too:
+
+```ts
+import { parseInspection, analyzeSurface } from "wasmquay-explorer";
+
+const surface = analyzeSurface(parseInspection(reportJson));
+if (surface.hasUnknown) {
+  throw new Error(`${surface.source} imports an unclassified host!`);
+}
+console.log(`${surface.source}: ${surface.band} (score ${surface.score})`);
+```
+
+---
+
+## `0x06` — Capability classification, at a glance
+
+| Import shape                                   | Domain     | Rationale                        |
+|------------------------------------------------|------------|----------------------------------|
+| `preview1` `fd_*`, `path_*`                    | `fs`       | file & directory I/O             |
+| `preview1` `environ_*`, `args_*`               | `env`      | ambient environment / argv       |
+| `preview1` `clock_*`                           | `clock`    | wall / monotonic time            |
+| `preview1` `sock_*`                            | `network`  | sockets                          |
+| `preview1` `random_get`                        | `random`   | randomness source                |
+| `wasi:filesystem/*`                            | `fs`       | component-model filesystem       |
+| `wasi:cli/*`                                   | `env`      | environment + args               |
