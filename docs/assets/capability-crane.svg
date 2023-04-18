@@ -62,3 +62,10 @@
       <text x="350" y="276">env ✗</text>
       <text x="350" y="296">unknown ✗</text>
     </g>
+    <!-- alert pulse on the deny bin -->
+    <circle cx="405" cy="215" r="4" fill="#ff5d5d">
+      <animate attributeName="opacity" values="1;0.15;1" dur="1.3s" repeatCount="indefinite"/>
+    </circle>
+  </g>
+
+  <!-- policy verdict readout -->
