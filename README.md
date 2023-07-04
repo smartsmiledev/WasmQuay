@@ -271,3 +271,41 @@ classified capability domains:
   fs       wasi:filesystem/types
   stdio    wasi:io/streams
 ```
+
+---
+
+## `0x05` — The TypeScript explorer
+
+The Rust CLI produces JSON; the explorer turns it into an opinionated risk view.
+It executes nothing — it is a pure function of the report you feed it.
+
+```console
+$ ./target/release/WasmQuay inspect fixtures/net-service.wasm --json > net.json
+$ ./target/release/WasmQuay policy fixtures/net-service.wasm examples/sandbox-strict.pol --json > pol.json
+
+$ node explorer/dist/cli.js surface net.json pol.json
+▚ net-service.wasm (net-service)
+  risk: ● HIGH (score 22.9)
+  imports=5 exports=1
+  capabilities:
+    • network  x2  — can open sockets / exfiltrate data
+    • fs       x1  — can read or modify files
+    • clock    x1  — can read wall/monotonic clocks
+
+policy 'sandbox-strict': VIOLATION
+  ✓ [ok] 'fs' required and allowed
+  ✓ [ok] 'clock' required and allowed
+  ✗ [violation] 'network' is required but denied by policy 'sandbox-strict' — can open sockets / exfiltrate data
+```
+
+Rank several components by static risk:
+
+```console
+$ node explorer/dist/cli.js rank net.json clock.json
+capability risk ranking (highest first):
+  1. net-service.wasm         HIGH      score=22.9
+  2. clock-service.wasm       ELEVATED  score=10
+```
+
+The risk score weights domains by blast radius (`network`/`unknown` = 5,
+`fs` = 4, `env` = 2, `clock`/`random`/`stdio` = 1) and scales sub-linearly with
