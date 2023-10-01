@@ -243,3 +243,41 @@ exit=3
 ### `compat` — is it a safe swap?
 
 ```console
+$ ./target/release/WasmQuay compat fixtures/clock-service.wasm fixtures/net-service.wasm
+compat clock-service.wasm <- net-service.wasm: BREAKING
+  ! new capability required: network via wasi_snapshot_preview1
+```
+
+`net-service` keeps every export `clock-service` had, so exports are fine — but
+it *adds* a network requirement. A host that safely ran the clock service might
+not be prepared to grant sockets, so the swap is flagged **BREAKING**.
+
+The reverse direction is compatible (dropping a capability never breaks a host):
+
+```console
+$ ./target/release/WasmQuay compat fixtures/net-service.wasm fixtures/clock-service.wasm
+compat net-service.wasm <- clock-service.wasm: COMPATIBLE
+```
+
+### `manifest` — read a WIT-like world
+
+```console
+$ ./target/release/WasmQuay manifest examples/image-pipeline.wit
+package: acme:image-pipeline@1.4.0
+world processor (3 imports, 2 exports)
+world thumbnailer (1 imports, 1 exports)
+classified capability domains:
+  clock    wasi:clocks/wall-clock
+  fs       wasi:filesystem/types
+  stdio    wasi:io/streams
+```
+
+---
+
+## `0x05` — The TypeScript explorer
+
+The Rust CLI produces JSON; the explorer turns it into an opinionated risk view.
+It executes nothing — it is a pure function of the report you feed it.
+
+```console
+$ ./target/release/WasmQuay inspect fixtures/net-service.wasm --json > net.json
