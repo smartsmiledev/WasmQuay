@@ -149,3 +149,20 @@ order is stable across runs.
 
 ```json
 {
+  "schema": "wasmquay/policy@1",
+  "policy": "sandbox-strict",
+  "compliant": false,
+  "violations": ["network"],
+  "verdicts": [
+    { "domain": "network", "required": true, "allowed": false, "violation": true,
+      "requirements": ["wasi_snapshot_preview1 :: sock_recv"] }
+  ]
+}
+```
+
+A `verdict` exists for every domain; `required` marks the ones the component
+actually uses. `violation == required && !allowed`.
+
+### 4.3 `wasmquay/compat@1`
+
+```json
