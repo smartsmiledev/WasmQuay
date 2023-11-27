@@ -138,3 +138,41 @@ Requirements: a stable Rust toolchain (≥ 1.74) and Node.js (≥ 20). Nothing e
 # Rust workspace — the whole thing compiles offline.
 $ cargo build --release
 $ cargo test                    # 43 tests: unit + integration + doctest
+
+# TypeScript explorer.
+$ cd explorer
+$ npm run build                 # tsc -> dist/
+$ npm test                      # tsc -> dist-test/ + node --test  (12 tests)
+```
+
+Or drive both sides through the `Makefile`:
+
+```console
+$ make build      # rust-build + ts-build
+$ make test       # rust-test  + ts-test
+$ make fixtures   # regenerate the .wasm fixtures
+$ make examples   # produce example JSON reports and analyze them
+$ make help       # list every target
+```
+
+---
+
+## `0x04` — The command surface
+
+```text
+WasmQuay <COMMAND> [ARGS] [--json] [--pretty]
+
+  inspect <file.wasm>                 decode header/sections/imports/exports
+  caps <file.wasm>                    list classified capability requirements
+  policy <file.wasm> <policy.pol>     evaluate a module against a policy
+  compat <baseline.wasm> <cand.wasm>  compare two modules for compatibility
+  manifest <file.wit>                 parse a WIT-like interface manifest
+  gen-fixtures <dir>                  write the bundled .wasm fixtures
+```
+
+Exit codes are CI-shaped: `0` ok/compliant/compatible · `1` usage · `2`
+parse/IO · `3` policy violation or incompatibility.
+
+### `inspect` — read the binary
+
+```console
