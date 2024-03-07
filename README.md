@@ -338,3 +338,41 @@ console.log(`${surface.source}: ${surface.band} (score ${surface.score})`);
 | `preview1` `random_get`                        | `random`   | randomness source                |
 | `wasi:filesystem/*`                            | `fs`       | component-model filesystem       |
 | `wasi:cli/*`                                   | `env`      | environment + args               |
+| `wasi:clocks/*`                                | `clock`    | component-model clocks           |
+| `wasi:sockets/*`                               | `network`  | component-model sockets          |
+| `wasi:random/*`                                | `random`   | component-model randomness       |
+| `wasi:io/*`                                    | `stdio`    | streams                          |
+| *anything else*                                | `unknown`  | **unrecognized host — untrusted**|
+
+Memory/table/global imports are data plumbing and are **not** treated as
+capabilities. An `unknown` import always violates a deny-by-default policy —
+WasmQuay never silently ignores a host dependency it can't name.
+
+The full grammar for every format (WIT-like manifest, `.pol` policy, and all
+four JSON schemas) is specified in **[`docs/FORMAT.md`](docs/FORMAT.md)**.
+
+---
+
+## `0x07` — Fixtures
+
+The repository ships four deterministic binary fixtures under `fixtures/`, and
+the exact encoder that produced them (`wasmquay-core::fixture`). Regenerate them
+byte-for-byte any time:
+
+```console
+$ ./target/release/WasmQuay gen-fixtures fixtures
+```
+
+Because the encoder writes the same grammar the decoder reads, the round-trip
+`build → parse` is itself an end-to-end test of the format code
+(`fixture::tests::round_trips_through_parser`).
+
+| Fixture                | Shape                                                          |
+|------------------------|----------------------------------------------------------------|
+| `clock-service.wasm`   | clock + stdio + fs (well-behaved worker)                       |
+| `net-service.wasm`     | clock service **plus** sockets (networked variant)             |
+| `fs-component.wasm`    | component-model preview2 interface imports                     |
+| `opaque-host.wasm`     | imports an unrecognized host → classified `unknown`            |
+
+---
+
