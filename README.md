@@ -90,3 +90,42 @@ What it genuinely does, verified by its own test suite:
   **TypeScript explorer** that computes risk scores and reconciles findings.
 
 ---
+
+## `0x02` — Architecture
+
+```text
+        ┌──────────────────────── RUST (std-only) ─────────────────────────┐
+        │                                                                   │
+  .wasm │   leb ──▶ wasm ──▶ policy ──▶ compat                              │
+  ──────┼─▶ ┌─────┐  ┌────┐  ┌──────┐  ┌──────┐        ┌──────────┐         │
+  .wit  │   │bytes│  │decode│ │classify││diff │  ──────▶│  report  │─┐       │
+  ──────┼─▶ │+LEB │  │hdr/  │ │fs/env/ ││expo │        │ json/txt │ │       │
+  .pol  │   │     │  │sect/ │ │clock/  ││caps │        └──────────┘ │       │
+  ──────┼─▶ └─────┘  │imp/  │ │net/... │└──────┘             ▲       │       │
+        │            │exp/  │ └──────┘                       │       │       │
+        │            │name  │              fixture ──────────┘       │       │
+        │            └──────┘              (binary encoder)          │       │
+        └────────────────────────────────────────────────────────────┼──────┘
+                                                                       │ JSON
+        ┌──────────────────── TYPESCRIPT (tsc-only) ───────────────────▼──────┐
+        │   parse (schema guards) ──▶ analyze (risk + reconcile) ──▶ render    │
+        │                          wasmquay-explore CLI                        │
+        └───────────────────────────────────────────────────────────────────┘
+```
+
+| Crate / package        | Role                                                             |
+|------------------------|------------------------------------------------------------------|
+| `wasmquay-core`        | The engine: decoding, classification, policy, compat, JSON.      |
+| `wasmquay-cli`         | The `WasmQuay` binary and its subcommands.                       |
+| `wasmquay-explorer`    | TypeScript library + `wasmquay-explore` CLI over the JSON reports.|
+
+Both language halves are **dependency-free at runtime**. The Rust workspace
+pulls in *zero* third-party crates; the TypeScript package needs only the
+compiler itself (it ships its own minimal ambient type shims so it type-checks
+without downloading `@types/node`).
+
+<div align="center">
+<img src="docs/assets/capability-crane.svg" alt="capability crane sorting fs/env/clock/network containers into allow and deny bins" width="70%"/>
+</div>
+
+---
