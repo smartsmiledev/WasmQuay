@@ -81,3 +81,41 @@ What it genuinely does, verified by its own test suite:
   custom `name` section (module + function names).
 - **Classifies** every host import into `fs · env · clock · network · random ·
   stdio · unknown`, covering both WASI preview1 function names and preview2 /
+  component-model interface paths.
+- **Evaluates** a component's capability set against an explicit, deny-by-default
+  policy with per-domain allow-lists.
+- **Compares** two components for substitutability (is B a safe drop-in for A?).
+- **Reads** a documented WIT-like interface manifest subset.
+- **Emits** stable, versioned JSON and human text — consumed by a companion
+  **TypeScript explorer** that computes risk scores and reconciles findings.
+
+---
+
+## `0x02` — Architecture
+
+```text
+        ┌──────────────────────── RUST (std-only) ─────────────────────────┐
+        │                                                                   │
+  .wasm │   leb ──▶ wasm ──▶ policy ──▶ compat                              │
+  ──────┼─▶ ┌─────┐  ┌────┐  ┌──────┐  ┌──────┐        ┌──────────┐         │
+  .wit  │   │bytes│  │decode│ │classify││diff │  ──────▶│  report  │─┐       │
+  ──────┼─▶ │+LEB │  │hdr/  │ │fs/env/ ││expo │        │ json/txt │ │       │
+  .pol  │   │     │  │sect/ │ │clock/  ││caps │        └──────────┘ │       │
+  ──────┼─▶ └─────┘  │imp/  │ │net/... │└──────┘             ▲       │       │
+        │            │exp/  │ └──────┘                       │       │       │
+        │            │name  │              fixture ──────────┘       │       │
+        │            └──────┘              (binary encoder)          │       │
+        └────────────────────────────────────────────────────────────┼──────┘
+                                                                       │ JSON
+        ┌──────────────────── TYPESCRIPT (tsc-only) ───────────────────▼──────┐
+        │   parse (schema guards) ──▶ analyze (risk + reconcile) ──▶ render    │
+        │                          wasmquay-explore CLI                        │
+        └───────────────────────────────────────────────────────────────────┘
+```
+
+| Crate / package        | Role                                                             |
+|------------------------|------------------------------------------------------------------|
+| `wasmquay-core`        | The engine: decoding, classification, policy, compat, JSON.      |
+| `wasmquay-cli`         | The `WasmQuay` binary and its subcommands.                       |
+| `wasmquay-explorer`    | TypeScript library + `wasmquay-explore` CLI over the JSON reports.|
+
