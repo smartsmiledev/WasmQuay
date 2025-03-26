@@ -119,3 +119,41 @@ What it genuinely does, verified by its own test suite:
 | `wasmquay-cli`         | The `WasmQuay` binary and its subcommands.                       |
 | `wasmquay-explorer`    | TypeScript library + `wasmquay-explore` CLI over the JSON reports.|
 
+Both language halves are **dependency-free at runtime**. The Rust workspace
+pulls in *zero* third-party crates; the TypeScript package needs only the
+compiler itself (it ships its own minimal ambient type shims so it type-checks
+without downloading `@types/node`).
+
+<div align="center">
+<img src="docs/assets/capability-crane.svg" alt="capability crane sorting fs/env/clock/network containers into allow and deny bins" width="70%"/>
+</div>
+
+---
+
+## `0x03` — Install & build
+
+Requirements: a stable Rust toolchain (≥ 1.74) and Node.js (≥ 20). Nothing else.
+
+```console
+# Rust workspace — the whole thing compiles offline.
+$ cargo build --release
+$ cargo test                    # 43 tests: unit + integration + doctest
+
+# TypeScript explorer.
+$ cd explorer
+$ npm run build                 # tsc -> dist/
+$ npm test                      # tsc -> dist-test/ + node --test  (12 tests)
+```
+
+Or drive both sides through the `Makefile`:
+
+```console
+$ make build      # rust-build + ts-build
+$ make test       # rust-test  + ts-test
+$ make fixtures   # regenerate the .wasm fixtures
+$ make examples   # produce example JSON reports and analyze them
+$ make help       # list every target
+```
+
+---
+
