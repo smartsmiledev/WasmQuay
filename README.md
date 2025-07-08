@@ -205,3 +205,41 @@ Every offset and size above is read from the actual bytes — you can seek to
 
 ### `caps` — just the capability surface
 
+```console
+$ ./target/release/WasmQuay caps fixtures/fs-component.wasm
+fs       wasi:filesystem/types :: read-via-stream
+clock    wasi:clocks/wall-clock :: now
+```
+
+Note the different import style: `fs-component.wasm` imports **component-model
+interface paths** (`wasi:filesystem/types`) rather than preview1 function
+names — WasmQuay classifies both.
+
+### `policy` — gate it
+
+```console
+$ cat examples/sandbox-strict.pol
+policy "sandbox-strict"
+default deny
+allow clock
+allow stdio
+allow fs: /tmp, /var/cache/worker
+deny network
+deny env
+
+$ ./target/release/WasmQuay policy fixtures/clock-service.wasm examples/sandbox-strict.pol
+policy 'sandbox-strict': COMPLIANT
+  [allow] fs       (1 reqs)
+  [allow] clock    (1 reqs)
+
+$ ./target/release/WasmQuay policy fixtures/net-service.wasm examples/sandbox-strict.pol ; echo "exit=$?"
+policy 'sandbox-strict': VIOLATION
+  [allow] fs       (1 reqs)
+  [allow] clock    (1 reqs)
+  [DENY ] network  (2 reqs)
+exit=3
+```
+
+### `compat` — is it a safe swap?
+
+```console
