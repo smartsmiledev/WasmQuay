@@ -6,3 +6,6 @@
     "noUnusedLocals": false,
     "declaration": false
   },
+  "include": ["src/**/*.ts", "test/**/*.ts"],
+  "exclude": ["dist", "dist-test", "node_modules"]
+}
