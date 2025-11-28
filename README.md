@@ -367,3 +367,41 @@ Because the encoder writes the same grammar the decoder reads, the round-trip
 `build → parse` is itself an end-to-end test of the format code
 (`fixture::tests::round_trips_through_parser`).
 
+| Fixture                | Shape                                                          |
+|------------------------|----------------------------------------------------------------|
+| `clock-service.wasm`   | clock + stdio + fs (well-behaved worker)                       |
+| `net-service.wasm`     | clock service **plus** sockets (networked variant)             |
+| `fs-component.wasm`    | component-model preview2 interface imports                     |
+| `opaque-host.wasm`     | imports an unrecognized host → classified `unknown`            |
+
+---
+
+## `0x08` — Testing & CI
+
+```console
+$ cargo test
+    test result: ok. 4 passed;  0 failed;   # WasmQuay-cli
+    test result: ok. 38 passed; 0 failed;   # WasmQuay-core
+    test result: ok. 1 passed;  0 failed;   # doctest
+
+$ cd explorer && npm test
+    ℹ tests 12
+    ℹ pass 12
+    ℹ fail 0
+```
+
+CI (`.github/workflows/ci.yml`) runs three jobs: the Rust matrix
+(fmt + clippy `-D warnings` + build + test on Linux/macOS/Windows), the
+TypeScript job (typecheck + build + test), and a **cross-language integration**
+job that pipes a real Rust-generated report into the TypeScript explorer.
+
+The whole codebase is `cargo fmt` clean and passes `cargo clippy -D warnings`,
+and the core crate compiles with `#![forbid(unsafe_code)]`.
+
+---
+
+## `0x09` — Layout
+
+```text
+WasmQuay/
+├── Cargo.toml                     # workspace
