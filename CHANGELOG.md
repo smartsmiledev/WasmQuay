@@ -50,3 +50,11 @@ adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 - Full WebAssembly core binary decoder: header, section table, imports,
   memory, tables, globals, functions, code sections.
 - CLI entry point (`wasmquay-cli`) with `inspect` and `classify` commands.
+
+## [0.0.1] - 2018-05-14
+
+### Added
+- Initial LEB128 reader (`leb`) with unsigned and signed variable-length ints.
+- Minimal wasm header + section-table walker.
+
+// draft note 1
