@@ -190,4 +190,4 @@ mod tests {
         let mut r = Reader::new(&[0x01, 0x00, 0x00, 0x00]);
         assert_eq!(r.u32_le().unwrap(), 1);
     }
-# review note
+}
