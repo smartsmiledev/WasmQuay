@@ -186,3 +186,270 @@ $ ./target/release/WasmQuay inspect fixtures/clock-service.wasm --pretty
     { "id": 7, "name": "export", "custom_name": null, "offset": 101, "size": 7 },
     { "id": 0, "name": "custom", "custom_name": "name", "offset": 110, "size": 29 }
   ],
+  "imports": [
+    { "module": "wasi_snapshot_preview1", "field": "clock_time_get", "kind": "func" },
+    { "module": "wasi_snapshot_preview1", "field": "fd_write", "kind": "func" },
+    { "module": "env", "field": "memory", "kind": "memory" }
+  ],
+  "exports": [ { "field": "run", "kind": "func", "index": 0 } ],
+  "names": [ { "index": 0, "name": "run" } ],
+  "capabilities": [
+    { "domain": "fs",    "requirements": [ { "source": "wasi_snapshot_preview1", "detail": "fd_write" } ] },
+    { "domain": "clock", "requirements": [ { "source": "wasi_snapshot_preview1", "detail": "clock_time_get" } ] }
+  ]
+}
+```
+
+Every offset and size above is read from the actual bytes — you can seek to
+`offset` in the file and find exactly that section payload.
+
+### `caps` — just the capability surface
+
+```console
+$ ./target/release/WasmQuay caps fixtures/fs-component.wasm
+fs       wasi:filesystem/types :: read-via-stream
+clock    wasi:clocks/wall-clock :: now
+```
+
+Note the different import style: `fs-component.wasm` imports **component-model
+interface paths** (`wasi:filesystem/types`) rather than preview1 function
+names — WasmQuay classifies both.
+
+### `policy` — gate it
+
+```console
+$ cat examples/sandbox-strict.pol
+policy "sandbox-strict"
+default deny
+allow clock
+allow stdio
+allow fs: /tmp, /var/cache/worker
+deny network
+deny env
+
+$ ./target/release/WasmQuay policy fixtures/clock-service.wasm examples/sandbox-strict.pol
+policy 'sandbox-strict': COMPLIANT
+  [allow] fs       (1 reqs)
+  [allow] clock    (1 reqs)
+
+$ ./target/release/WasmQuay policy fixtures/net-service.wasm examples/sandbox-strict.pol ; echo "exit=$?"
+policy 'sandbox-strict': VIOLATION
+  [allow] fs       (1 reqs)
+  [allow] clock    (1 reqs)
+  [DENY ] network  (2 reqs)
+exit=3
+```
+
+### `compat` — is it a safe swap?
+
+```console
+$ ./target/release/WasmQuay compat fixtures/clock-service.wasm fixtures/net-service.wasm
+compat clock-service.wasm <- net-service.wasm: BREAKING
+  ! new capability required: network via wasi_snapshot_preview1
+```
+
+`net-service` keeps every export `clock-service` had, so exports are fine — but
+it *adds* a network requirement. A host that safely ran the clock service might
+not be prepared to grant sockets, so the swap is flagged **BREAKING**.
+
+The reverse direction is compatible (dropping a capability never breaks a host):
+
+```console
+$ ./target/release/WasmQuay compat fixtures/net-service.wasm fixtures/clock-service.wasm
+compat net-service.wasm <- clock-service.wasm: COMPATIBLE
+```
+
+### `manifest` — read a WIT-like world
+
+```console
+$ ./target/release/WasmQuay manifest examples/image-pipeline.wit
+package: acme:image-pipeline@1.4.0
+world processor (3 imports, 2 exports)
+world thumbnailer (1 imports, 1 exports)
+classified capability domains:
+  clock    wasi:clocks/wall-clock
+  fs       wasi:filesystem/types
+  stdio    wasi:io/streams
+```
+
+---
+
+## `0x05` — The TypeScript explorer
+
+The Rust CLI produces JSON; the explorer turns it into an opinionated risk view.
+It executes nothing — it is a pure function of the report you feed it.
+
+```console
+$ ./target/release/WasmQuay inspect fixtures/net-service.wasm --json > net.json
+$ ./target/release/WasmQuay policy fixtures/net-service.wasm examples/sandbox-strict.pol --json > pol.json
+
+$ node explorer/dist/cli.js surface net.json pol.json
+▚ net-service.wasm (net-service)
+  risk: ● HIGH (score 22.9)
+  imports=5 exports=1
+  capabilities:
+    • network  x2  — can open sockets / exfiltrate data
+    • fs       x1  — can read or modify files
+    • clock    x1  — can read wall/monotonic clocks
+
+policy 'sandbox-strict': VIOLATION
+  ✓ [ok] 'fs' required and allowed
+  ✓ [ok] 'clock' required and allowed
+  ✗ [violation] 'network' is required but denied by policy 'sandbox-strict' — can open sockets / exfiltrate data
+```
+
+Rank several components by static risk:
+
+```console
+$ node explorer/dist/cli.js rank net.json clock.json
+capability risk ranking (highest first):
+  1. net-service.wasm         HIGH      score=22.9
+  2. clock-service.wasm       ELEVATED  score=10
+```
+
+The risk score weights domains by blast radius (`network`/`unknown` = 5,
+`fs` = 4, `env` = 2, `clock`/`random`/`stdio` = 1) and scales sub-linearly with
+how many distinct entry points a domain has, so one chatty domain can't drown
+out the signal. The exact weights and bands live in
+[`explorer/src/analyze.ts`](explorer/src/analyze.ts).
+
+Use it as a library, too:
+
+```ts
+import { parseInspection, analyzeSurface } from "wasmquay-explorer";
+
+const surface = analyzeSurface(parseInspection(reportJson));
+if (surface.hasUnknown) {
+  throw new Error(`${surface.source} imports an unclassified host!`);
+}
+console.log(`${surface.source}: ${surface.band} (score ${surface.score})`);
+```
+
+---
+
+## `0x06` — Capability classification, at a glance
+
+| Import shape                                   | Domain     | Rationale                        |
+|------------------------------------------------|------------|----------------------------------|
+| `preview1` `fd_*`, `path_*`                    | `fs`       | file & directory I/O             |
+| `preview1` `environ_*`, `args_*`               | `env`      | ambient environment / argv       |
+| `preview1` `clock_*`                           | `clock`    | wall / monotonic time            |
+| `preview1` `sock_*`                            | `network`  | sockets                          |
+| `preview1` `random_get`                        | `random`   | randomness source                |
+| `wasi:filesystem/*`                            | `fs`       | component-model filesystem       |
+| `wasi:cli/*`                                   | `env`      | environment + args               |
+| `wasi:clocks/*`                                | `clock`    | component-model clocks           |
+| `wasi:sockets/*`                               | `network`  | component-model sockets          |
+| `wasi:random/*`                                | `random`   | component-model randomness       |
+| `wasi:io/*`                                    | `stdio`    | streams                          |
+| *anything else*                                | `unknown`  | **unrecognized host — untrusted**|
+
+Memory/table/global imports are data plumbing and are **not** treated as
+capabilities. An `unknown` import always violates a deny-by-default policy —
+WasmQuay never silently ignores a host dependency it can't name.
+
+The full grammar for every format (WIT-like manifest, `.pol` policy, and all
+four JSON schemas) is specified in **[`docs/FORMAT.md`](docs/FORMAT.md)**.
+
+---
+
+## `0x07` — Fixtures
+
+The repository ships four deterministic binary fixtures under `fixtures/`, and
+the exact encoder that produced them (`wasmquay-core::fixture`). Regenerate them
+byte-for-byte any time:
+
+```console
+$ ./target/release/WasmQuay gen-fixtures fixtures
+```
+
+Because the encoder writes the same grammar the decoder reads, the round-trip
+`build → parse` is itself an end-to-end test of the format code
+(`fixture::tests::round_trips_through_parser`).
+
+| Fixture                | Shape                                                          |
+|------------------------|----------------------------------------------------------------|
+| `clock-service.wasm`   | clock + stdio + fs (well-behaved worker)                       |
+| `net-service.wasm`     | clock service **plus** sockets (networked variant)             |
+| `fs-component.wasm`    | component-model preview2 interface imports                     |
+| `opaque-host.wasm`     | imports an unrecognized host → classified `unknown`            |
+
+---
+
+## `0x08` — Testing & CI
+
+```console
+$ cargo test
+    test result: ok. 4 passed;  0 failed;   # WasmQuay-cli
+    test result: ok. 38 passed; 0 failed;   # WasmQuay-core
+    test result: ok. 1 passed;  0 failed;   # doctest
+
+$ cd explorer && npm test
+    ℹ tests 12
+    ℹ pass 12
+    ℹ fail 0
+```
+
+CI (`.github/workflows/ci.yml`) runs three jobs: the Rust matrix
+(fmt + clippy `-D warnings` + build + test on Linux/macOS/Windows), the
+TypeScript job (typecheck + build + test), and a **cross-language integration**
+job that pipes a real Rust-generated report into the TypeScript explorer.
+
+The whole codebase is `cargo fmt` clean and passes `cargo clippy -D warnings`,
+and the core crate compiles with `#![forbid(unsafe_code)]`.
+
+---
+
+## `0x09` — Layout
+
+```text
+WasmQuay/
+├── Cargo.toml                     # workspace
+├── Makefile                       # build/test orchestration
+├── crates/
+│   ├── wasmquay-core/             # std-only engine
+│   │   └── src/{leb,wasm,wit,policy,compat,report,json,fixture,error}.rs
+│   └── wasmquay-cli/              # the `WasmQuay` binary
+├── explorer/                      # TypeScript static explorer
+│   ├── src/{types,parse,analyze,render,index,cli}.ts
+│   └── test/{parse,analyze}.test.ts
+├── fixtures/                      # generated .wasm binaries
+├── examples/                      # policies, a .wit manifest, captured JSON
+├── docs/
+│   ├── FORMAT.md                  # normative format spec
+│   └── assets/{quay-hero,capability-crane}.svg
+└── .github/workflows/ci.yml
+```
+
+---
+
+## `0x0A` — Design notes
+
+- **Zero dependencies, on purpose.** A security-adjacent tool that ships a
+  supply chain of transitive crates is working against its own thesis. The JSON
+  emitter, the LEB128 reader, the argument parser — all hand-written std.
+- **Total parsing.** The decoder is bounds-checked everywhere and returns a
+  typed `Error` (with a byte offset) instead of panicking on malformed input.
+  See `leb::tests::eof_is_reported` and `wasm::tests::rejects_bad_magic`.
+- **Deny by default.** A policy with no `default` line denies everything. You
+  opt *in* to capabilities, never out.
+- **Stable wire format.** Object key order is deterministic and every document
+  carries a `schema` discriminator, so report diffs are readable and the
+  TypeScript guards can reject the wrong shape early.
+
+---
+
+## `0x0B` — License
+
+Released under the [MIT License](LICENSE). See [`CHANGELOG.md`](CHANGELOG.md)
+for release history.
+
+<div align="center">
+
+```text
+── end of transmission ──  the quay is quiet.  the components are accounted for.
+```
+
+</div>
+
+// draft note 4
