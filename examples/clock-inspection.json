@@ -57,3 +57,28 @@
   "names": [
     {
       "index": 0,
+      "name": "run"
+    }
+  ],
+  "capabilities": [
+    {
+      "domain": "fs",
+      "requirements": [
+        {
+          "source": "wasi_snapshot_preview1",
+          "detail": "fd_write"
+        }
+      ]
+    },
+    {
+      "domain": "clock",
+      "requirements": [
+        {
+          "source": "wasi_snapshot_preview1",
+          "detail": "clock_time_get"
+        }
+      ]
+    }
+  ]
+}
+// draft note 6
