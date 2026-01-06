@@ -5,3 +5,10 @@
 
 policy "edge-networked"
 default deny
+
+allow clock
+allow stdio
+allow network: api.internal, cache.internal
+deny fs
+
+// draft note 8
