@@ -45,3 +45,23 @@
       "domain": "random",
       "required": false,
       "allowed": false,
+      "violation": false,
+      "requirements": []
+    },
+    {
+      "domain": "stdio",
+      "required": false,
+      "allowed": true,
+      "violation": false,
+      "requirements": []
+    },
+    {
+      "domain": "unknown",
+      "required": false,
+      "allowed": false,
+      "violation": false,
+      "requirements": []
+    }
+  ]
+}
+// draft note 11
