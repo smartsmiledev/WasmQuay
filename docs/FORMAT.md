@@ -206,4 +206,4 @@ Both CLIs share a convention so they compose in CI:
 | 2    | parse or I/O error                        |
 | 3    | policy violation or incompatibility       |
 
-// draft note 29
+// draft note 45
