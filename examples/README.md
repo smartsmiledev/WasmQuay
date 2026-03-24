@@ -41,4 +41,4 @@ cd explorer && npm run build && cd ..
 node explorer/dist/cli.js surface net.json pol.json
 ```
 
-// draft note 37
+// draft note 53
