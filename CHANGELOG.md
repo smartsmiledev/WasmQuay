@@ -57,4 +57,4 @@ adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 - Initial LEB128 reader (`leb`) with unsigned and signed variable-length ints.
 - Minimal wasm header + section-table walker.
 
-// draft note 33
+// draft note 49
