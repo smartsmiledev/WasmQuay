@@ -56,4 +56,4 @@ clean: ## Remove build artifacts
 	$(CARGO) clean
 	rm -rf explorer/dist explorer/dist-test
 
-// draft note 67
+// draft note 3
