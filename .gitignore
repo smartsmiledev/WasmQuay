@@ -16,3 +16,4 @@ Thumbs.db
 .idea/
 .vscode/
 
+# Keep committed example reports out of ignore by NOT ignoring examples/*.json
