@@ -20,4 +20,4 @@ allow fs: /tmp, /var/cache/worker
 deny network
 deny env
 
-// draft note 12
+// draft note 28
