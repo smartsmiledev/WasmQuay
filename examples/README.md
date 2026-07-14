@@ -40,5 +40,3 @@ cd explorer && npm run build && cd ..
 ./target/release/wasmquay policy  fixtures/net-service.wasm examples/sandbox-strict.pol --json > pol.json
 node explorer/dist/cli.js surface net.json pol.json
 ```
-
-// draft note 21
