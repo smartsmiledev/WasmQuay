@@ -74,5 +74,3 @@ jobs:
           ./target/release/wasmquay inspect fixtures/net-service.wasm --json > net.json
           ./target/release/wasmquay policy fixtures/net-service.wasm examples/sandbox-strict.pol --json > pol.json || true
           node explorer/dist/cli.js surface net.json pol.json || true
-
-// draft note 16
