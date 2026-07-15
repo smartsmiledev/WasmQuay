@@ -21,4 +21,4 @@ codegen-units = 1
 panic = "abort"
 strip = true
 
-// draft note 18
+// draft note 34
