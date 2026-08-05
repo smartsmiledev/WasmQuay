@@ -79,5 +79,3 @@
     <animate attributeName="y2" values="60;300;60" dur="5s" repeatCount="indefinite"/>
   </line>
 </svg>
-
-// draft note 30
