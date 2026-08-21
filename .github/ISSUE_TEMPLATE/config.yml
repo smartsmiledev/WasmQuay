@@ -1,0 +1,5 @@
+blank_issues_enabled: false
+contact_links:
+  - name: Decoder crashes on untrusted input
+    url: https://github.com/britsman/WasmQuay/blob/main/.github/SECURITY.md
+    about: Possible decoder vulnerabilities go through the security policy, not a public issue.
